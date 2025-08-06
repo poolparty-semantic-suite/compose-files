@@ -13,9 +13,7 @@ The only properties that must be changed are:
 * `POOLPARTY_LICENSE` this is the full path on the host machine to a valid PoolParty license
 * `GRAPHDB_LICENSE` this is the full path on the host machine to a valid GraphDB license
 
-# Running the services
 
-Before running any commands, create a `.env` file and change the configurations, if needed.
 
 ## Development
 
@@ -29,7 +27,12 @@ This command will use the default [docker-compose.yaml](./docker-compose.yaml) f
 This will start PoolParty and dependent service in the foreground. Append the `-d` flag to run in the background.
 The services are configured with less security and no high-availability.
 
-After all services are running, PoolParty should be accessible at http://localhost/PoolParty.
+After all services are running, PoolParty should be accessible at http://localhost. The default password for the 
+`superadmin` user (if not changed in the `.env` file) is `poolparty`. After the first login, you should be prompted to
+change it.
+
+The default Keycloak admin is `poolparty_auth_admin` with password `admin`. These could be changed using the `.env`
+file, respectively with the variables `POOLPARTY_KEYCLOAK_ADMIN_USERNAME` and `POOLPARTY_KEYCLOAK_ADMIN_PASSWORD`.
 
 ## Production
 
