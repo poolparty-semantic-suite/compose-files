@@ -1,19 +1,22 @@
 services:
   proxy:
-    image: nginx
+    image: nginx:1.29.0
     environment:
+      SERVER_NAME:
       PROXY_CLIENT_MAX_BODY_SIZE:
       PROXY_SEND_TIMEOUT:
       PROXY_READ_TIMEOUT:
     volumes:
-      - ./files/nginx/default.conf:/etc/nginx/templates/default.conf.template
+      - ${PROXY_CONFIG_PATH}:/etc/nginx/templates/poolparty.conf.template
     ports:
       - "80:80"
 
   keycloak:
+    # change latest-amd64 to latest-arm64 if needed
     image: docker-registry.ontotext.com/poolparty-keycloak:latest
     environment:
       KC_PROXY_HEADERS:
+      KC_HTTP_ENABLED:
       KC_HTTP_RELATIVE_PATH:
       KC_HOSTNAME:
       KEYCLOAK_ADMIN:
@@ -42,15 +45,18 @@ services:
     mem_limit: 10g
 
   graphdb:
-    image: docker-registry.ontotext.com/graphdb:11.1.0-RC5
+    image: docker-registry.ontotext.com/graphdb:11.1.0
+    environment:
+      graphdb__license__file: /etc/graphdb/graphdb.license
     ports:
       - "7200:7200"
     volumes:
-      - "${GRAPHDB_LICENSE}:/opt/graphdb/home/conf/graphdb.license:ro"
+      - "${GRAPHDB_LICENSE}:/etc/graphdb/graphdb.license:ro"
       - graphdb_data:/opt/graphdb/home
 
   poolparty:
-    image: docker-registry.ontotext.com/poolparty:latest
+    # change latest-amd64 to latest-arm64 if needed
+    image: docker-registry.ontotext.com/poolparty:latest-amd64
     environment:
       POOLPARTY_KEYCLOAK_LOGIN_REALM:
       POOLPARTY_KEYCLOAK_ADMIN_REALM:
@@ -68,7 +74,7 @@ services:
     ports:
       - "8081:8081"
     extra_hosts:
-      - "keycloak.127.0.0.1.nip.io:host-gateway"
+      - "${SERVER_NAME}:host-gateway"
     volumes:
       - "${POOLPARTY_LICENSE}:/usr/share/poolparty/config/licenses/poolparty.key:ro"
       - poolparty_data:/usr/share/poolparty/data

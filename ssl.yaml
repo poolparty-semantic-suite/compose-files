@@ -1,0 +1,15 @@
+services:
+  proxy:
+    ports:
+      - "443:443"
+    volumes:
+      - "${PROXY_CERT_PATH}:/etc/ssl/certs/poolparty.pem"
+      - "${PROXY_CERT_KEY_PATH}:/etc/ssl/private/poolparty.key"
+
+  poolparty:
+    environment:
+      USE_SYSTEM_CA_CERTS: yes
+      POOLPARTY_CORS_ALLOWEDORIGINS: "${SERVER_URL}"
+    volumes:
+      # certificate file inside the container must have a crt extension
+      - "${PROXY_CERT_PATH}:/certificates/poolparty.crt"

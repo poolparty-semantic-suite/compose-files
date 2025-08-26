@@ -1,49 +1,87 @@
 # Docker compose file for PoolParty
 
-This repository contains docker compose files for running PoolParty and dependent services.
-There are several files for different environments, e.g. development and production.
+This repository contains docker compose files for running PoolParty and related services.
+Docker compose simplifies the deployment of several services in one go, their configuration, and the relation between
+the service.
 
-# Configuration
+Docker compose allows chaining multiple service definition files, allowing the creation of multiple flavors, e.g.
+development, stage, and production.
 
-The services are configured mostly using environment variables. The repository contains a [.env_template](.env_template)
-file containing most common configurations. Before running any `docker compose` commands, copy the `.env_template` as
-`.env` in the same directory and change the configurations as desired.
+There are several files i this repository:
+* `docker-compose.yaml` this file should be used only for evaluation and testing purposes - it's not sutable for production
+* `production.yaml` this build on the default configuration, by adding additional services and configuration
+* `spark.yaml` if desired, a separate spark instance can be deployed
 
-The only properties that must be changed are:
-* `POOLPARTY_LICENSE` this is the full path on the host machine to a valid PoolParty license
-* `GRAPHDB_LICENSE` this is the full path on the host machine to a valid GraphDB license
+The basic docker compose commands are:
 
+`docker compose up`: this is used to start all services defined in the compose files. It will start the services in the
+foreground. To start the container and detach, add the `-d`/`--detach` flag.
 
+`docker compose down`: this is used to stop all services defined in the compose files. To remove all volumes add the
+`--volumes` flag, but be careful, as this will delete all data used by the services.
+
+To control individual containers you can use `docker compose [COMMAND]`, where `[COMMAND]` can be `start`, `stop`,
+`restart`, etc. Check the output of `docker compose help` for more information.
+
+# Running
+
+## Prerequisites
+
+1. A recent version of [Docker](https://docs.docker.com/engine/install/) and the docker-compose plugin.
+   1. Installation instructions for Docker on Linux include the `docker-compose-plugin`
+
+## Configuration
+
+The services are configured using environment variables. The repository contains a [.env_template](.env_template)
+file containing most common configurations.
+
+Before running any `docker compose` commands, copy the `.env_template` as `.env` in the same directory and change the 
+configurations as desired.
+
+There are two variables that must be changed:
+`POOLPARTY_LICENSE` this is the full path on the host machine to a valid PoolParty license
+`GRAPHDB_LICENSE` this is the full path on the host machine to a valid GraphDB license
+
+Other notable variable are:
+`POOLPARTY_KEYCLOAK_ADMIN_USERNAME`: this is the admin username for Keycloak, default `poolparty_auth_admin`.
+`POOLPARTY_KEYCLOAK_ADMIN_PASSWORD`: this is the password for the admin user in Keycloak, default `admin` and it's 
+recommended to be changed in production environments.
+`POOLPARTY_SUPER_ADMIN_PASSWORD`: this is the password for the `superadmin` in PoolParty, default `poolparty`. After the
+first login you'll be asked to change this password.
+
+Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
 
 ## Development
 
+This should be used only for development, testing, and evaluation purposes. The services are configured with less 
+security and no high-availability.
+
 To start a local development environment, run the following command:
+
 ```shell
-docker compose up
+docker compose up -d
 ```
 
-This command will use the default [docker-compose.yaml](./docker-compose.yaml) file.
+This command will use the default [docker-compose.yaml](./docker-compose.yaml) file. It will start PoolParty and the services that it
+depends on.
 
-This will start PoolParty and dependent service in the foreground. Append the `-d` flag to run in the background.
-The services are configured with less security and no high-availability.
-
-After all services are running, PoolParty should be accessible at http://localhost. The default password for the 
-`superadmin` user (if not changed in the `.env` file) is `poolparty`. After the first login, you should be prompted to
-change it.
-
-The default Keycloak admin is `poolparty_auth_admin` with password `admin`. These could be changed using the `.env`
-file, respectively with the variables `POOLPARTY_KEYCLOAK_ADMIN_USERNAME` and `POOLPARTY_KEYCLOAK_ADMIN_PASSWORD`.
+After all services are running, PoolParty should be accessible at http://poolparty.127.0.0.1.nip.io. 
+The default password for the `superadmin` is `poolparty`. After the first login, you will be prompted to change your 
+password.
 
 ## Production
 
-The production deployment build on top of the default compose file. To deploy the production configuration, run:
+The production deployment builds on the default compose file. To deploy the production configuration, run:
 
 ```shell
-docker compose -f docker-compose.yaml -f production.yaml up
+docker compose -f docker-compose.yaml -f production.yaml up -d
 ```
 
+Here we use multiple compose files, where every file is merged with the previous one. By doing that we add additional
+services or change configurations on existing ones.
+
 The additional [production.yaml](./production.yaml) file configures additional service, e.g. PostgreSQL service, used
-by Keycloak, configures persistent volumes, and other optimization options.
+by Keycloak, and other optimization options.
 
 ## Spark
 
@@ -51,7 +89,24 @@ Starting PoolParty 10, support for external Spark service was added. If needed a
 extended with an external Spark. To do that run a command similar to the following:
 
 ```shell
-docker compose up -f docker-compose.yaml -f spark.yaml up
+docker compose up -f docker-compose.yaml -f spark.yaml up -d
+```
+
+## Running with SSL
+
+In order to run the `proxy` service with SSL enabled, you will need to:
+1. Obtain an SSL certificate and key. Preferably, this should be generated by a trusted authority.
+   1. To generate a self-signed certificate, you can use the following command:
+   ```shell
+   openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
+      -keyout /etc/ssl/private/poolparty.key \
+      -out /etc/ssl/certs/poolparty.crt
+   ```
+2. In `.env` update the values of `PROXY_CERT_PATH` and `PROXY_CERT_KEY_PATH` to point to the respective files.
+3. In `.env` update the value of `PROXY_CONFIG_PATH` to `./files/nginx/poolparty_ssl.conf`
+4. Finally, start the services with:
+```shell
+docker compose -f docker-compose.yaml -f ssl.yaml up -d
 ```
 
 # Stopping services
@@ -61,3 +116,15 @@ started with `-d` flag - the command is the same as the one for starting, but in
 command.
 
 The delete all data stored by the services, append the `--volumes` flag.
+
+If you have specified multiple compose files in the `up` command, also specify them for the `down` command, otherwise
+some services might be left running.
+
+# Viewing log messages
+
+To view the combined log messages of all services use the `docker compose logs` command. If you have specified multiple
+compose files when starting the services, specify them here as well.
+
+Instead of viewing the logs from all services, you can request the logs from a single service. Using
+`docker compose logs [SERVICE]`, where [SERVICE] is the name of the desired service as defined in the compose file.
+You can use `docker compose logs -f [SERVICE]`, to follow the log as it's updated.
