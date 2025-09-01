@@ -78,6 +78,17 @@ After all services are running, PoolParty should be accessible at http://poolpar
 The default password for the `superadmin` is `poolparty`. After the first login, you will be prompted to change your 
 password.
 
+You can use a different instance for the Keycloak service. There are a few thing to configure before running without 
+Keycloak by default:
+1. Remember to change the PoolParty configurations for Keycloak.
+2. Update the proxy configuration file
+   1. Create a copy of either [poolparty.conf](files/nginx/poolparty.conf) or [poolparty_ssl.conf](files/nginx/poolparty_ssl.conf) and remove the `/auth` location directive.
+   2. In `.env` change the `PROXY_CONFIG_PATH` variable to point to your new config.
+3. Use the following command to start without deploying Keycloak.
+```shell
+docker compose up -d --scale keycloak=0
+```
+
 ## Production
 
 The production deployment builds on the default compose file. To deploy the production configuration, run:
