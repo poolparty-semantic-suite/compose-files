@@ -7,10 +7,11 @@ the service.
 Docker compose allows chaining multiple service definition files, allowing the creation of multiple flavors, e.g.
 development, stage, and production.
 
-There are several files i this repository:
+There are several files in this repository:
 * `docker-compose.yaml` this file should be used only for evaluation and testing purposes - it's not sutable for production
 * `production.yaml` this build on the default configuration, by adding additional services and configuration
 * `spark.yaml` if desired, a separate spark instance can be deployed
+* `ssl.yaml` add support for ssl to the proxy service
 
 The basic docker compose commands are:
 
@@ -22,6 +23,14 @@ foreground. To start the container and detach, add the `-d`/`--detach` flag.
 
 To control individual containers you can use `docker compose [COMMAND]`, where `[COMMAND]` can be `start`, `stop`,
 `restart`, etc. Check the output of `docker compose help` for more information.
+
+Multiple files could be used to manage different flavors of the deployment. The default `docker-compose.yaml` can be
+used for development and testing/evaluations. All other flavors build on top of this, for example to deploy a separate
+Apache Spark service use the following command:
+
+```shell
+docker compose -f docker-compose.yaml -f spark.yaml up
+```
 
 # Running
 
@@ -39,14 +48,14 @@ Before running any `docker compose` commands, copy the `.env_template` as `.env`
 configurations as desired.
 
 There are two variables that must be changed:
-`POOLPARTY_LICENSE` this is the full path on the host machine to a valid PoolParty license
-`GRAPHDB_LICENSE` this is the full path on the host machine to a valid GraphDB license
+* `POOLPARTY_LICENSE` this is the full path on the host machine to a valid PoolParty license
+* `GRAPHDB_LICENSE` this is the full path on the host machine to a valid GraphDB license
 
 Other notable variable are:
-`POOLPARTY_KEYCLOAK_ADMIN_USERNAME`: this is the admin username for Keycloak, default `poolparty_auth_admin`.
-`POOLPARTY_KEYCLOAK_ADMIN_PASSWORD`: this is the password for the admin user in Keycloak, default `admin` and it's 
+* `POOLPARTY_KEYCLOAK_ADMIN_USERNAME`: this is the admin username for Keycloak, default `poolparty_auth_admin`.
+* `POOLPARTY_KEYCLOAK_ADMIN_PASSWORD`: this is the password for the admin user in Keycloak, default `admin` and it's 
 recommended to be changed in production environments.
-`POOLPARTY_SUPER_ADMIN_PASSWORD`: this is the password for the `superadmin` in PoolParty, default `poolparty`. After the
+* `POOLPARTY_SUPER_ADMIN_PASSWORD`: this is the password for the `superadmin` in PoolParty, default `poolparty`. After the
 first login you'll be asked to change this password.
 
 Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
