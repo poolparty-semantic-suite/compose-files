@@ -7,6 +7,7 @@ services:
       PROXY_SEND_TIMEOUT:
       PROXY_READ_TIMEOUT:
     volumes:
+      - ./files/nginx/includes:/etc/nginx/includes
       - ${PROXY_CONFIG_PATH}:/etc/nginx/templates/poolparty.conf.template
     ports:
       - "80:80"
@@ -46,7 +47,13 @@ services:
   graphdb:
     image: ontotext/graphdb:11.1.0
     environment:
+      USE_SYSTEM_CA_CERTS: yes
+      graphdb__home: /opt/graphdb/home
       graphdb__license__file: /etc/graphdb/graphdb.license
+    entrypoint:
+      - "/__cacert_entrypoint.sh"
+    command:
+      - "/opt/graphdb/dist/bin/graphdb"
     ports:
       - "7200:7200"
     volumes:
@@ -54,9 +61,9 @@ services:
       - graphdb_data:/opt/graphdb/home
 
   poolparty:
-    # change latest-amd64 to latest-arm64 if needed
     image: ontotext/poolparty:10.0.0
     environment:
+      USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_KEYCLOAK_LOGIN_REALM:
       POOLPARTY_KEYCLOAK_ADMIN_REALM:
       POOLPARTY_KEYCLOAK_AUTHURL:

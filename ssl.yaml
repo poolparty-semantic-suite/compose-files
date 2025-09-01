@@ -8,7 +8,6 @@ services:
 
   poolparty:
     environment:
-      USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS: "${SERVER_URL}"
     volumes:
       # certificate file inside the container must have a crt extension
