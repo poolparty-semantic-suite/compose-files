@@ -148,3 +148,67 @@ compose files when starting the services, specify them here as well.
 Instead of viewing the logs from all services, you can request the logs from a single service. Using
 `docker compose logs [SERVICE]`, where [SERVICE] is the name of the desired service as defined in the compose file.
 You can use `docker compose logs -f [SERVICE]`, to follow the log as it's updated.
+
+# Migrating from PoolParty 9.7
+
+## Prerequisites
+
+1. Download the [migration tool](https://maven.ontotext.com/repository/poolparty-releases/biz/poolparty/poolparty-10-migration/1.0.0/poolparty-10-migration-1.0.0.jar)
+2. If you have projects stored on a remote GraphDB instance, download them locally, if you want to migrate them
+3. Stop the 9.7 PoolParty instance, and copy the installation directory to the directory specified by `POOLPARTY_9_DIR`
+
+## Migration Steps
+
+All migration steps will be executed within the PoolParty container. The [default](./docker-compose.yaml) compose file
+will be used, but additionally, we will override the PoolParty start up command, and also Keycloak and ElasticSearch
+will not be started.
+
+This is done using the [migration](./migration.yaml) compose file. It disables the Keycloak and ElasticSearch containers,
+but their volumes will be created. Additionally, it leaves GraphDB running, so that project data can be migrated.
+
+The migration compose file will also:
+1. Mount the current working directory to the `/migration` directory inside the PoolParty container
+2. Mount the directory specified in by the `POOLPARTY_9_DIR` variable in `.env` to `/var/lib/poolparty-9` inside the PoolParty container
+
+To migrate data from a PoolParty 9.7 to PoolParty 10, follow these steps:
+
+1. Start the migration containers
+   ```shell
+   docker compose -f docker-compose.yaml -f migration.yaml up -d
+   ```
+2. Enter the `poolparty` container
+   ```shell
+   docker compose -f docker-compose.yaml -f migration.yaml exec --user root -it poolparty bash
+   ```
+3. To migrate all local projects and PoolParty configurations, run the following commands
+   ```shell
+      java -jar /migration/poolparty-10-migration-1.0.0.jar "/var/lib/poolparty-9" "/var/lib/poolparty" \
+        --gdb-url http://graphdb:7200 \
+        --skip-remote \
+        --env-file /migration/env_migrated
+      chown -R poolparty:poolparty /var/lib/poolparty
+   ```
+4. To migrate ElasticSearch data, run the following commands
+   ```shell
+   cp -r /var/lib/poolparty-9/data/elasticsearch/. /usr/share/elasticsearch/data/
+   chown -R 1000:root /usr/share/elasticsearch/data
+   ```
+5. If using Keycloak with embedded database, run the following commands to migrate
+   ```shell
+   cp -r /var/lib/poolparty-9/auth_service/keycloak/data/. /opt/keycloak/data/
+   chown -R 1000:root /opt/keycloak/data
+   ```
+6. Exit the container using the `exit` command, and stop the containers. Be careful not to delete the volumes.
+   ```shell
+   docker compose -f docker-compose.yaml -f migration.yaml down
+   ```
+
+In step `3`, the `--env-file /migration/env_migrated` flag was used. This should have created the `env_migrated` file
+in the current directory.
+
+1. Copy the contents of this file and paste it at the end of your `.env` file
+2. Review the migrated configurations
+   1. Make sure that any addresses match the new installation
+   2. Delete `POOLPARTY_INDEX_URL` property, as it is already present in the configuration with the correct value
+3. Follow the [section](#running) on running the compose files
+4. Import any downloaded remote projects back to PoolParty
