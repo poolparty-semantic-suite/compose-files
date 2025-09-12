@@ -1,0 +1,9 @@
+services:
+  graphviews:
+    image: ontotext/poolparty-graphviews:latest
+    environment:
+      POOLPARTY_URL: ${SERVER_URL}
+      POOLPARTY_USER: ${POOLPARTY_USER}
+      POOLPARTY_PASS: ${POOLPARTY_PASS}
+    ports:
+      - "8080:8080"
