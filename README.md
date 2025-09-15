@@ -74,7 +74,7 @@ docker compose up -d
 This command will use the default [docker-compose.yaml](./docker-compose.yaml) file. It will start PoolParty and the services that it
 depends on.
 
-After all services are running, PoolParty should be accessible at http://poolparty.127.0.0.1.nip.io. 
+After all services are running, PoolParty should be accessible at http://poolparty.127.0.0.1.nip.io/PoolParty. 
 The default password for the `superadmin` is `poolparty`. After the first login, you will be prompted to change your 
 password.
 
