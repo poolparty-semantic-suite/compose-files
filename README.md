@@ -182,12 +182,15 @@ To migrate data from a PoolParty 9.7 to PoolParty 10, follow these steps:
    ```
 3. To migrate all local projects and PoolParty configurations, run the following commands
    ```shell
-      java -jar /migration/poolparty-10-migration-1.0.0.jar "/var/lib/poolparty-9" "/var/lib/poolparty" \
-        --gdb-url http://graphdb:7200 \
-        --skip-remote \
-        --env-file /migration/env_migrated
-      chown -R poolparty:poolparty /var/lib/poolparty
+   java -jar /migration/poolparty-10-migration-1.0.0.jar "/var/lib/poolparty-9" "/var/lib/poolparty" \
+     --gdb-url http://graphdb:7200 \
+     --skip-remote \
+     --env-file /migration/env_migrated
+   chown -R poolparty:poolparty /var/lib/poolparty
    ```
+   This step will migrate all repositories from the PoolParty 9.7 to a new external GraphDB instance.
+   If you are not using the GraphDB instance from the compose file, change the `--gdb-url` flag. You can also provide
+   `--gdb-username`, `--gdb-password` for basic authentication, or `--gdb-auth-header` for other authentication methods.
 4. To migrate ElasticSearch data, run the following commands
    ```shell
    cp -r /var/lib/poolparty-9/data/elasticsearch/. /usr/share/elasticsearch/data/
@@ -198,6 +201,8 @@ To migrate data from a PoolParty 9.7 to PoolParty 10, follow these steps:
    cp -r /var/lib/poolparty-9/auth_service/keycloak/data/. /opt/keycloak/data/
    chown -R 1000:root /opt/keycloak/data
    ```
+   If you are using an external Keycloak instance you can skip this step. Just make sure to update the Keycloak address
+   in `.env` file.
 6. Exit the container using the `exit` command, and stop the containers. Be careful not to delete the volumes.
    ```shell
    docker compose -f docker-compose.yaml -f migration.yaml down
