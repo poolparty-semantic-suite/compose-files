@@ -1,0 +1,28 @@
+services:
+  poolparty:
+    environment:
+      POOLPARTY_GRAPHDB_URL:
+      POOLPARTY_GRAPHDB_USERNAME:
+      POOLPARTY_GRAPHDB_PASSWORD:
+      POOLPARTY_GRAPHDB_AUTHORIZATIONHEADER:
+    volumes:
+      - ".:/migration"
+      - "${POOLPARTY_9_DIR}:/var/lib/poolparty-9"
+      - "poolparty_data:/var/lib/poolparty"
+      - "elastic_data:/usr/share/elasticsearch/data"
+      - "keycloak_data:/opt/keycloak/data"
+    command:
+      - sleep
+      - infinity
+
+  elasticsearch:
+    profiles:
+      - never
+
+  keycloak:
+    profiles:
+      - never
+
+  proxy:
+    profiles:
+      - never

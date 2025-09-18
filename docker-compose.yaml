@@ -60,6 +60,11 @@ services:
     volumes:
       - "${GRAPHDB_LICENSE}:/etc/graphdb/graphdb.license:ro"
       - graphdb_data:/opt/graphdb/home
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:7200/protocol" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
   poolparty:
     image: ontotext/poolparty:10.0.0
@@ -73,18 +78,21 @@ services:
       POOLPARTY_KEYCLOAK_ADMIN_CLIENTID:
       POOLPARTY_KEYCLOAK_ADMIN_USERNAME:
       POOLPARTY_KEYCLOAK_ADMIN_PASSWORD:
-      POOLPARTY_INDEX_TYPE: ELASTICSEARCH
-      POOLPARTY_INDEX_URL: http://elasticsearch:9200
-      POOLPARTY_GRAPHDB_URL: http://graphdb:7200
+      POOLPARTY_INDEX_TYPE:
+      POOLPARTY_INDEX_URL:
+      POOLPARTY_GRAPHDB_URL:
+      POOLPARTY_GRAPHDB_USERNAME:
+      POOLPARTY_GRAPHDB_PASSWORD:
+      POOLPARTY_GRAPHDB_AUTHORIZATIONHEADER:
       PP_HEAP_SIZE:
-      _POOLPARTY_ENCRYPTION_PASSWORD: "1234567890"
+      _POOLPARTY_ENCRYPTION_PASSWORD:
     ports:
       - "8081:8081"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
     volumes:
       - "${POOLPARTY_LICENSE}:/usr/share/poolparty/config/licenses/poolparty.key:ro"
-      - poolparty_data:/usr/share/poolparty/data
+      - poolparty_data:/var/lib/poolparty
 
 volumes:
   keycloak_data:
