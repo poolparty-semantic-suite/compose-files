@@ -196,13 +196,16 @@ To migrate data from a PoolParty 9.7 to PoolParty 10, follow these steps:
    cp -r /var/lib/poolparty-9/data/elasticsearch/. /usr/share/elasticsearch/data/
    chown -R 1000:root /usr/share/elasticsearch/data
    ```
-5. If using Keycloak with embedded database, run the following commands to migrate
-   ```shell
-   cp -r /var/lib/poolparty-9/auth_service/keycloak/data/. /opt/keycloak/data/
-   chown -R 1000:root /opt/keycloak/data
-   ```
-   If you are using an external Keycloak instance you can skip this step. Just make sure to update the Keycloak address
-   in `.env` file.
+5. To migrate Keycloak, choose one of the following options, based on your setup
+   1. If in PoolParty 9.7 you used Keycloak with the embedded database, and you want to use the Keycloak instance from
+      the compose files, again with the embedded database, run the following command:
+      ```shell
+      cp -r /var/lib/poolparty-9/auth_service/keycloak/data/. /opt/keycloak/data/
+      chown -R 1000:root /opt/keycloak/data
+      ```
+   2. If in PoolParty 9.7 you used Keycloak with an external database, and you want to use the Keycloak instance from
+      the compose files with the same external database, add the appropriate Keycloak configurations in `.env`.
+   3. If you plan to use an external Keycloak instance, configure the PoolParty container to use that Keycloak instance.
 6. Exit the container using the `exit` command, and stop the containers. Be careful not to delete the volumes.
    ```shell
    docker compose -f docker-compose.yaml -f migration.yaml down
