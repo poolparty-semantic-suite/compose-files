@@ -1,0 +1,7 @@
+services:
+  graphviews:
+    image: ontotext/poolparty-graphviews:latest
+    environment:
+      POOLPARTY_URL:
+      POOLPARTY_USER:
+      POOLPARTY_PASS:
