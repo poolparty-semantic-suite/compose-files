@@ -13,7 +13,7 @@ services:
       - "80:80"
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.1.1
+    image: ontotext/poolparty-keycloak:2.2.0
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -47,7 +47,7 @@ services:
     mem_limit: 10g
 
   graphdb:
-    image: ontotext/graphdb:11.1.0
+    image: ontotext/graphdb:11.1.1
     environment:
       USE_SYSTEM_CA_CERTS: yes
       graphdb__home: /opt/graphdb/home
@@ -68,7 +68,7 @@ services:
       retries: 3
 
   poolparty:
-    image: ontotext/poolparty:10.0.0
+    image: ontotext/poolparty:10.0.1
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_KEYCLOAK_LOGIN_REALM:
