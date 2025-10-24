@@ -82,7 +82,7 @@ You can use a different instance for the Keycloak service. There are a few thing
 Keycloak by default:
 1. Remember to change the PoolParty configurations for Keycloak.
 2. Update the proxy configuration file
-   1. Create a copy of either [poolparty.conf](files/nginx/poolparty.conf) or [poolparty_ssl.conf](files/nginx/poolparty_ssl.conf) and remove the `/auth` location directive.
+   1. Create a copy of either [proxy.conf](files/nginx/proxy.conf) or [proxy_ssl.conf](files/nginx/proxy_ssl.conf) and remove the `/auth` location directive.
    2. In `.env` change the `PROXY_CONFIG_PATH` variable to point to your new config.
 3. Use the following command to start without deploying Keycloak.
 ```shell
@@ -123,7 +123,7 @@ In order to run the `proxy` service with SSL enabled, you will need to:
       -out /etc/ssl/certs/poolparty.crt
    ```
 2. In `.env` update the values of `PROXY_CERT_PATH` and `PROXY_CERT_KEY_PATH` to point to the respective files.
-3. In `.env` update the value of `PROXY_CONFIG_PATH` to `./files/nginx/poolparty_ssl.conf`
+3. In `.env` update the value of `PROXY_CONFIG_PATH` to `./files/nginx/proxy_ssl.conf`
 4. Finally, start the services with:
 ```shell
 docker compose -f docker-compose.yaml -f ssl.yaml up -d

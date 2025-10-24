@@ -10,7 +10,7 @@ services:
       POSTGRES_PASSWORD:
     volumes:
       - ./files/postgres/keycloak.sh:/docker-entrypoint-initdb.d/100-keycloak.sh:ro
-      - pg-data:/var/lib/postgresql
+      - pg_data:/var/lib/postgresql/data
 
   keycloak:
     environment:
@@ -24,6 +24,4 @@ services:
       - --import-realm
 
 volumes:
-  pg-data:
-  es-data:
-  graphdb-data:
+  pg_data:
