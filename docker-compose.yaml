@@ -52,6 +52,7 @@ services:
       USE_SYSTEM_CA_CERTS: yes
       graphdb__home: /opt/graphdb/home
       graphdb__license__file: /etc/graphdb/graphdb.license
+      graphdb__external___url:
     entrypoint:
       - "/__cacert_entrypoint.sh"
     command:
