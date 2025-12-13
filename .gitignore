@@ -2,3 +2,4 @@
 *.iml
 .env
 env_migrated
+files/nginx/includes/extra_includes/*.conf
