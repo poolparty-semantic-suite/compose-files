@@ -1,0 +1,32 @@
+services:
+  adf:
+    image: ontotext/adf:1.8.0
+    environment:
+      KEYCLOAK_URL: "${SERVER_URL}/auth"
+      POOLPARTY_URL: "${SERVER_URL}"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    volumes:
+      - adf_data:/var/lib/adf
+
+  semantic-workbench:
+    image: ontotext/semantic-workbench:2.4.0
+    environment:
+      KEYCLOAK_URL: "${SERVER_URL}/auth"
+      POOLPARTY_URL: "${SERVER_URL}"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      POOLPARTY_LICENSE_PATH: "/usr/share/semantic-workbench"
+      MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
+      # todo: the app version should not be explicitly configured
+      APPLICATION_VERSION: "2.4.0"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    volumes:
+      - "${POOLPARTY_LICENSE}:/usr/share/semantic-workbench/poolparty.key"
+      - semantic-workbench_data:/var/lib/semantic-workbench
+
+volumes:
+  adf_data:
+  semantic-workbench_data:
