@@ -129,6 +129,23 @@ In order to run the `proxy` service with SSL enabled, you will need to:
 docker compose -f docker-compose.yaml -f ssl.yaml up -d
 ```
 
+## Add-on Services
+
+To deploy the services that complement PoolParty, you can use the `addons.yaml` file. This file includes the Application
+Development Framework and the Semantic Workbench services.
+
+> [!NOTE]
+> Your PoolParty license must have the Semantic Workbench capability in order to use this service.
+
+Before starting the services, copy the nginx configuration files from `files/nginx/addons` to 
+`files/nginx/includes/extra_includes`. These will expose the service through nginx on the `/ADF` and 
+`/SemanticWorkbench` context paths.
+
+Now you can start all services:
+```shell
+docker compose up -f docker-compose.yaml -f addons.yaml up -d
+```
+
 # Stopping services
 
 If the services were started in the foreground, you can simply interrupt the process and the services will stop. If 
