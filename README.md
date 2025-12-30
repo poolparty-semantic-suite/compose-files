@@ -151,4 +151,4 @@ You can use `docker compose logs -f [SERVICE]`, to follow the log as it's update
 
 # Migration
 
-[Upgrading PoolParty 9.7 to 10](https://help.graphwise.ai/en/graphwise-documentation/how-to-install---manage-graphwise-components/installation---migration/poolparty-9-7-to-10-migration-guide.html#poolparty-9-7-to-10-migration-guide)
+[Upgrading PoolParty 9.7 to 10](https://help.graphwise.ai/pp10.0/en/graphwise-documentation/how-to-install---manage-graphwise-components/installation---migration/poolparty-2025-r2--9-7--to-poolparty-10-migration-guide.html)
