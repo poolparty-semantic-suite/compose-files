@@ -31,6 +31,16 @@ services:
       - "${POOLPARTY_LICENSE}:/usr/share/semantic-workbench/poolparty.key"
       - semantic-workbench_data:/var/lib/semantic-workbench
 
+  graphviews:
+    image: ontotext/graphviews:1.0.0
+    restart: unless-stopped
+    environment:
+      PP_USERNAME: superadmin
+      PP_PASSWORD: 12345678
+      PP_URL: "${SERVER_URL}"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+
 volumes:
   adf_data:
   semantic-workbench_data:

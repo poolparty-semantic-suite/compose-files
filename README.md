@@ -131,19 +131,17 @@ docker compose -f docker-compose.yaml -f ssl.yaml up -d
 
 ## Add-on Services
 
-To deploy the services that complement PoolParty, you can use the `addons.yaml` file. This file includes the Application
-Development Framework and the Semantic Workbench services.
+To deploy the services that complement PoolParty, you can use the `addons.yaml` file.
 
 > [!NOTE]
 > Your PoolParty license must have the Semantic Workbench capability in order to use this service.
 
 Before starting the services, copy the nginx configuration files from `files/nginx/addons` to 
-`files/nginx/includes/extra_includes`. These will expose the service through nginx on the `/ADF` and 
-`/SemanticWorkbench` context paths.
+`files/nginx/includes/extra_includes`. These will expose the service through nginx on their respective context paths.
 
 Now you can start all services:
 ```shell
-docker compose up -f docker-compose.yaml -f addons.yaml up -d
+docker compose -f docker-compose.yaml -f addons.yaml up -d
 ```
 
 # Stopping services
