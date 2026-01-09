@@ -41,6 +41,10 @@ services:
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
 
+  mirror-app:
+    image: ontotext/mirror-app:2.4.0
+    restart: unless-stopped
+
 volumes:
   adf_data:
   semantic-workbench_data:
