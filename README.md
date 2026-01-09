@@ -12,6 +12,7 @@ There are several files in this repository:
 * `production.yaml` this build on the default configuration, by adding additional services and configuration
 * `spark.yaml` if desired, a separate spark instance can be deployed
 * `ssl.yaml` add support for ssl to the proxy service
+* `addons.yaml` provides additional services which extend the standard PoolParty functionality
 
 The basic docker compose commands are:
 
@@ -127,6 +128,21 @@ In order to run the `proxy` service with SSL enabled, you will need to:
 4. Finally, start the services with:
 ```shell
 docker compose -f docker-compose.yaml -f ssl.yaml up -d
+```
+
+## Add-on Services
+
+To deploy the services that complement PoolParty, you can use the `addons.yaml` file.
+
+> [!NOTE]
+> Your PoolParty license must have the Semantic Workbench capability in order to use this service.
+
+Before starting the services, copy the nginx configuration files from `files/nginx/addons` to 
+`files/nginx/includes/extra_includes`. These will expose the service through nginx on their respective context paths.
+
+Now you can start all services:
+```shell
+docker compose -f docker-compose.yaml -f addons.yaml up -d
 ```
 
 # Stopping services
