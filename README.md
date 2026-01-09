@@ -12,6 +12,7 @@ There are several files in this repository:
 * `production.yaml` this build on the default configuration, by adding additional services and configuration
 * `spark.yaml` if desired, a separate spark instance can be deployed
 * `ssl.yaml` add support for ssl to the proxy service
+* `addons.yaml` provides additional services which extend the standard PoolParty functionality
 
 The basic docker compose commands are:
 
