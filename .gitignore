@@ -2,3 +2,6 @@
 *.iml
 .env
 env_migrated
+*.crt
+*.pem
+*.key
