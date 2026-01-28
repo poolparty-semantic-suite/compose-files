@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
     environment:
       PP_USERNAME: superadmin
-      PP_PASSWORD: 12345678
+      PP_PASSWORD: ${POOLPARTY_SUPER_ADMIN_PASSWORD}
       PP_URL: "${SERVER_URL}"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
