@@ -42,8 +42,14 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   mirror-app:
-    image: ontotext/mirror-app:2.4.0
+    image: ontotext/mirror-app:2.4.1
     restart: unless-stopped
+    ports:
+      - "8008:8008"
+    #environment:
+    #  MIRROR_CONFIG: /app/server-map.json
+    #volumes:
+    #  - /path/to/external/server-map.json:/app/server-map.json
 
 volumes:
   adf_data:
