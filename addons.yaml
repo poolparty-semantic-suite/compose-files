@@ -1,6 +1,6 @@
 services:
   adf:
-    image: ontotext/adf:1.8.0
+    image: ontotext/adf:1.8.1
     restart: unless-stopped
     environment:
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
@@ -14,7 +14,7 @@ services:
       - adf_data:/var/lib/adf
 
   semantic-workbench:
-    image: ontotext/semantic-workbench:2.4.0
+    image: ontotext/semantic-workbench:2.4.1
     restart: unless-stopped
     environment:
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
@@ -24,7 +24,7 @@ services:
       POOLPARTY_LICENSE_PATH: "/usr/share/semantic-workbench"
       MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
       # todo: the app version should not be explicitly configured
-      APPLICATION_VERSION: "2.4.0"
+      APPLICATION_VERSION: "2.4.1"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
     volumes:
@@ -46,10 +46,12 @@ services:
     restart: unless-stopped
     ports:
       - "8008:8008"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
     #environment:
     #  MIRROR_CONFIG: /app/server-map.json
     #volumes:
-    #  - /path/to/external/server-map.json:/app/server-map.json
+    #  - /path/to/external/server-map.json:/app/Server-map.json
 
 volumes:
   adf_data:
