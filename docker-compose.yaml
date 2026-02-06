@@ -70,7 +70,7 @@ services:
       retries: 3
 
   poolparty:
-    image: docker-registry.ontotext.com/poolparty:10.1.0
+    image: ontotext/poolparty:10.1.0
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_KEYCLOAK_LOGIN_REALM:
