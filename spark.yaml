@@ -1,6 +1,6 @@
 services:
   spark:
-    image: bitnami/spark:4.0
+    image: bitnamilegacy/spark:4.0.0-debian-12-r20
     environment:
       SPARK_MODE: master
       SPARK_RPC_AUTHENTICATION_ENABLED: no
@@ -10,7 +10,7 @@ services:
       SPARK_USER: spark
 
   spark-worker:
-    image: bitnami/spark:4.0
+    image: bitnamilegacy/spark:4.0.0-debian-12-r20
     environment:
       SPARK_MODE: worker
       SPARK_MASTER_URL: spark://spark:7077
