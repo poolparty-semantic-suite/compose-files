@@ -7,8 +7,6 @@ services:
       - "${PROXY_CERT_KEY_PATH}:/etc/ssl/private/poolparty.key"
 
   poolparty:
-    environment:
-      POOLPARTY_CORS_ALLOWEDORIGINS: "${SERVER_URL}"
     volumes:
       # certificate file inside the container must have a crt extension
       - "${PROXY_CERT_PATH}:/certificates/poolparty.crt"
