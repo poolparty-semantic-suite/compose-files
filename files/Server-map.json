@@ -1,0 +1,45 @@
+{
+  "service": {
+    "comments": [
+      "Settings for the mirroring service itself.",
+      "control: where to authenticate PoolParty session and retrieve project uuid. @source is the source server.",
+      "name: optional; will be shown by the UI in the starting page",
+      "token: optional; alternative to session-based authentication",
+      "authorized_users: optional; if absent, any user can trigger synchronization",
+      "origins: optional list of CORS origins; omit if the UI is hosted on the source server",
+      "EXAMPLES:",
+      {
+        "name": "Taxonomy Publishing Service",
+        "token": "XXXXXXXXXXXXXXXXXXX",
+        "authorized_users": [
+          "sync_user",
+          "another_user"
+        ],
+        "origins": [
+          "https://mirroring-host.poolparty.biz"
+        ]
+      }
+    ],
+    "control": "@source"
+  },
+  "source": {
+    "host": "http://poolparty.127.0.0.1.nip.io",
+    "name": "Authoring",
+    "user": "apiuser",
+    "password": "poolparty",
+    "export_parameters": {
+      "modules": [ "concepts", "blacklistedTerms" ]
+    },
+    "comment": "Role: API User; Groups: Mirror"
+  },
+
+  "targets": [
+    {
+      "host": "https://my-prod.com",
+      "name": "Production",
+      "user": "apiadmin",
+      "password": "poolparty",
+      "comment": "Role: API Admin; Groups: Public"
+    }
+  ]
+}
