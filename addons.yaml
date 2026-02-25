@@ -51,7 +51,7 @@ services:
     #environment:
     #  MIRROR_CONFIG: /app/server-map.json
     #volumes:
-    #  - /path/to/external/server-map.json:/app/Server-map.json
+    #  - ./files/Server-map.json:/app/Server-map.json
 
 volumes:
   adf_data:
