@@ -1,6 +1,6 @@
 services:
   adf:
-    image: ontotext/adf:1.8.1
+    image: ontotext/adf:1.8.2
     restart: unless-stopped
     environment:
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
