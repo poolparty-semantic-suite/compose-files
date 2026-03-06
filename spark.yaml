@@ -1,26 +1,17 @@
 services:
   spark:
-    image: bitnamilegacy/spark:4.0.0-debian-12-r20
+    image: apache/spark:4.0.1
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     environment:
-      SPARK_MODE: master
-      SPARK_RPC_AUTHENTICATION_ENABLED: no
-      SPARK_RPC_ENCRYPTION_ENABLED: no
-      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
-      SPARK_SSL_ENABLED: no
-      SPARK_USER: spark
+      SPARK_NO_DAEMONIZE: "true"
 
   spark-worker:
-    image: bitnamilegacy/spark:4.0.0-debian-12-r20
+    image: apache/spark:4.0.1
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark:7077 --memory 1G --cores 1
     environment:
-      SPARK_MODE: worker
-      SPARK_MASTER_URL: spark://spark:7077
-      SPARK_WORKER_MEMORY: 1G
-      SPARK_WORKER_CORES: 1
-      SPARK_RPC_AUTHENTICATION_ENABLED: no
-      SPARK_RPC_ENCRYPTION_ENABLED: no
-      SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED: no
-      SPARK_SSL_ENABLED: no
-      SPARK_USER: spark
+      SPARK_NO_DAEMONIZE: "true"
+    depends_on:
+      - spark
 
   poolparty:
     environment:
