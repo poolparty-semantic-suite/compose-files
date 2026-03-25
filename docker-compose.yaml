@@ -20,6 +20,7 @@ services:
       KC_HTTP_ENABLED:
       KC_HTTP_RELATIVE_PATH:
       KC_HOSTNAME:
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC:
       KEYCLOAK_ADMIN:
       KEYCLOAK_ADMIN_PASSWORD:
       POOLPARTY_SUPER_ADMIN_PASSWORD:
@@ -95,8 +96,6 @@ services:
       _POOLPARTY_URL_BASE_CONTEXT:
     ports:
       - "8081:8081"
-    extra_hosts:
-      - "${SERVER_NAME}:host-gateway"
     volumes:
       - "${POOLPARTY_LICENSE}:/usr/share/poolparty/config/licenses/poolparty.key:ro"
       - poolparty_data:/var/lib/poolparty
