@@ -165,7 +165,7 @@ After deploying the services, they should be accessible at:
 - Semantic Workbench - http(s)://<server-name>/SemanticWorkbench
 - GraphViews - http(s)://<server-name>/GraphViews
 - Mirror App - http(s)://<server-name>/PoolParty/mirror/ui
-- RDF4J Workbench (for UV) - http(s)://<server-name>/rdf4j
+- RDF4J Workbench (for UV) - http(s)://<server-name>/rdf4j-workbench
 - Unified Views - http(s)://<server-name>/UnifiedViews
 
 # Stopping services
