@@ -147,12 +147,8 @@ docker compose -f docker-compose.yaml -f addons.yaml up -d
 
 ### UnifiedViews
 
-> You need to provide PoolParty license with UnifiedViews features enabled.  
-> Also you might want to use custom `.properties` file with your specific configurations.
-
-> You need to manually create native repository in the RDF4J Workbench with id `uv` or provision a `.ttl` file
-> containing repository configuration as a volume to the `rdf4j` service in order for the repository to be created
-> automatically.
+You need to provide PoolParty license with UnifiedViews features enabled.  
+Also you might want to use custom `.properties` file with your specific configurations.
 
 ## Services URLs
 
@@ -165,7 +161,6 @@ After deploying the services, they should be accessible at:
 - Semantic Workbench - http(s)://<server-name>/SemanticWorkbench
 - GraphViews - http(s)://<server-name>/GraphViews
 - Mirror App - http(s)://<server-name>/PoolParty/mirror/ui
-- RDF4J Workbench (for UV) - http(s)://<server-name>/rdf4j-workbench
 - Unified Views - http(s)://<server-name>/UnifiedViews
 
 # Stopping services
