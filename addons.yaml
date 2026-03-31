@@ -68,7 +68,7 @@ services:
       - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
 
   unified-views:
-    image: docker-registry.ontotext.com/gwp/unifiedviews:10.2.0
+    image: ontotext/unifiedviews:10.2.0
     restart: unless-stopped
     depends_on:
       - rdf4j
