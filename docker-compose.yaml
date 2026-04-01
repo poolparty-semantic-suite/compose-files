@@ -34,7 +34,7 @@ services:
       - --import-realm
 
   elasticsearch:
-    image: ontotext/poolparty-elasticsearch:8.17.6
+    image: ontotext/poolparty-elasticsearch:9.2.4
     environment:
       discovery.type:
       xpack.security.enabled:
@@ -103,6 +103,10 @@ services:
     volumes:
       - "${POOLPARTY_LICENSE}:/usr/share/poolparty/config/licenses/poolparty.key:ro"
       - poolparty_data:/var/lib/poolparty
+    depends_on:
+      - elasticsearch
+      - keycloak
+      - graphdb
 
 volumes:
   keycloak_data:
