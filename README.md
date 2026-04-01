@@ -145,6 +145,24 @@ Now you can start all services:
 docker compose -f docker-compose.yaml -f addons.yaml up -d
 ```
 
+### UnifiedViews
+
+You need to provide PoolParty license with UnifiedViews features enabled.  
+Also you might want to use custom `.properties` file with your specific configurations.
+
+## Services URLs
+
+After deploying the services, they should be accessible at:
+- GraphDB - http(s)://<server-name>/graphdb
+- Keycloak - http(s)://<server-name>/auth
+- PoolParty - http(s)://<server-name>/PoolParty
+- LDF - http(s)://<server-name>/
+- ADF - http(s)://<server-name>/ADF
+- Semantic Workbench - http(s)://<server-name>/SemanticWorkbench
+- GraphViews - http(s)://<server-name>/GraphViews
+- Mirror App - http(s)://<server-name>/PoolParty/mirror/ui
+- Unified Views - http(s)://<server-name>/UnifiedViews
+
 # Stopping services
 
 If the services were started in the foreground, you can simply interrupt the process and the services will stop. If 

@@ -53,6 +53,40 @@ services:
     #volumes:
     #  - ./files/Server-map.json:/app/Server-map.json
 
+  rdf4j:
+    image: eclipse/rdf4j-workbench:4.3.15
+    restart: unless-stopped
+    ports:
+      - 8086:8080
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    environment:
+      APP_LOGGING_LEVEL: INFO
+      APP_SERVER: tomcat
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
+
+  unified-views:
+    image: ontotext/unifiedviews:10.2.0
+    restart: unless-stopped
+    depends_on:
+      - rdf4j
+    ports:
+      - 8085:8080
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    environment:
+      LICENSE_DIR: /unified-views/license/
+    #  PROPERTIES_FILE: /unified-views/configs/uv.properties
+    volumes:
+      - uv_data:/unified-views
+      - "${UNIFIEDVIEWS_LICENSE}:/unified-views/license/uv-license.key:ro"
+    # - ./my-custom-uv.properties:/unified-views/configs/uv.properties
+
 volumes:
   adf_data:
   semantic-workbench_data:
+  rdf4j_data:
+  rdf4j_logs:
+  uv_data:
