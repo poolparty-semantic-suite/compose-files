@@ -42,7 +42,7 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   mirror-app:
-    image: ontotext/mirror-app:2.4.1
+    image: ontotext/mirror-app:2.4.2
     restart: unless-stopped
     ports:
       - "8008:8008"
