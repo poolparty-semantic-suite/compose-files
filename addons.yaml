@@ -1,0 +1,92 @@
+services:
+  adf:
+    image: ontotext/adf:1.8.2
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
+      KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
+      POOLPARTY_URL: "${SERVER_URL}"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    volumes:
+      - adf_data:/var/lib/adf
+
+  semantic-workbench:
+    image: ontotext/semantic-workbench:2.4.2
+    restart: unless-stopped
+    environment:
+      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
+      KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
+      POOLPARTY_URL: "${SERVER_URL}"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      POOLPARTY_LICENSE_PATH: "/usr/share/semantic-workbench"
+      MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
+      # todo: the app version should not be explicitly configured
+      APPLICATION_VERSION: "2.4.2"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    volumes:
+      - "${POOLPARTY_LICENSE}:/usr/share/semantic-workbench/poolparty.key"
+      - semantic-workbench_data:/var/lib/semantic-workbench
+
+  graphviews:
+    image: ontotext/graphviews:1.0.0
+    restart: unless-stopped
+    environment:
+      PP_USERNAME: superadmin
+      PP_PASSWORD: ${POOLPARTY_SUPER_ADMIN_PASSWORD}
+      PP_URL: "${SERVER_URL}"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+
+  mirror-app:
+    image: ontotext/mirror-app:2.4.2
+    restart: unless-stopped
+    ports:
+      - "8008:8008"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    #environment:
+    #  MIRROR_CONFIG: /app/server-map.json
+    #volumes:
+    #  - ./files/Server-map.json:/app/Server-map.json
+
+  rdf4j:
+    image: eclipse/rdf4j-workbench:4.3.15
+    restart: unless-stopped
+    ports:
+      - 8086:8080
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    environment:
+      APP_LOGGING_LEVEL: INFO
+      APP_SERVER: tomcat
+    volumes:
+      - rdf4j_data:/var/rdf4j
+      - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
+
+  unified-views:
+    image: ontotext/unifiedviews:10.2.0
+    restart: unless-stopped
+    depends_on:
+      - rdf4j
+    ports:
+      - 8085:8080
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+    environment:
+      LICENSE_DIR: /unified-views/license/
+    #  PROPERTIES_FILE: /unified-views/configs/uv.properties
+    volumes:
+      - uv_data:/unified-views
+      - "${UNIFIEDVIEWS_LICENSE}:/unified-views/license/uv-license.key:ro"
+    # - ./my-custom-uv.properties:/unified-views/configs/uv.properties
+
+volumes:
+  adf_data:
+  semantic-workbench_data:
+  rdf4j_data:
+  rdf4j_logs:
+  uv_data:

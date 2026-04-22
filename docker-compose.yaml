@@ -1,6 +1,7 @@
 services:
   proxy:
     image: nginx:1.29.0
+    restart: unless-stopped
     environment:
       SERVER_NAME:
       PROXY_CLIENT_MAX_BODY_SIZE:
@@ -13,12 +14,13 @@ services:
       - "80:80"
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.2.0
+    image: ontotext/poolparty-keycloak:2.3.0
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
       KC_HTTP_RELATIVE_PATH:
       KC_HOSTNAME:
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC:
       KEYCLOAK_ADMIN:
       KEYCLOAK_ADMIN_PASSWORD:
       POOLPARTY_SUPER_ADMIN_PASSWORD:
@@ -33,7 +35,7 @@ services:
       - --import-realm
 
   elasticsearch:
-    image: ontotext/poolparty-elasticsearch:8.17.6
+    image: ontotext/poolparty-elasticsearch:9.2.4
     environment:
       discovery.type:
       xpack.security.enabled:
@@ -47,7 +49,7 @@ services:
     mem_limit: 10g
 
   graphdb:
-    image: ontotext/graphdb:11.1.2
+    image: ontotext/graphdb:11.3.2
     environment:
       USE_SYSTEM_CA_CERTS: yes
       graphdb__home: /opt/graphdb/home
@@ -69,9 +71,10 @@ services:
       retries: 3
 
   poolparty:
-    image: ontotext/poolparty:10.0.2
+    image: ontotext/poolparty:10.2.0
     environment:
       USE_SYSTEM_CA_CERTS: yes
+      POOLPARTY_CORS_ALLOWEDORIGINS:
       POOLPARTY_KEYCLOAK_LOGIN_REALM:
       POOLPARTY_KEYCLOAK_ADMIN_REALM:
       POOLPARTY_KEYCLOAK_AUTHURL:
@@ -82,6 +85,8 @@ services:
       POOLPARTY_KEYCLOAK_ADMIN_PASSWORD:
       POOLPARTY_INDEX_TYPE:
       POOLPARTY_INDEX_URL:
+      POOLPARTY_INDEX_USERNAME:
+      POOLPARTY_INDEX_PASSWORD:
       POOLPARTY_GRAPHDB_URL:
       POOLPARTY_GRAPHDB_USERNAME:
       POOLPARTY_GRAPHDB_PASSWORD:
@@ -94,11 +99,13 @@ services:
       _POOLPARTY_URL_BASE_CONTEXT:
     ports:
       - "8081:8081"
-    extra_hosts:
-      - "${SERVER_NAME}:host-gateway"
     volumes:
       - "${POOLPARTY_LICENSE}:/usr/share/poolparty/config/licenses/poolparty.key:ro"
       - poolparty_data:/var/lib/poolparty
+    depends_on:
+      - elasticsearch
+      - keycloak
+      - graphdb
 
 volumes:
   keycloak_data:

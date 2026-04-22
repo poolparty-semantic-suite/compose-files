@@ -5,3 +5,4 @@ env_migrated
 *.crt
 *.pem
 *.key
+files/nginx/includes/extra_includes/*.conf
