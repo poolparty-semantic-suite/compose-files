@@ -98,11 +98,25 @@ The production deployment builds on the default compose file. To deploy the prod
 docker compose -f docker-compose.yaml -f production.yaml up -d
 ```
 
-Here we use multiple compose files, where every file is merged with the previous one. By doing that we add additional
+Here we use multiple compose files, where every file is merged with the previous one. By doing that, we add additional
 services or change configurations on existing ones.
 
 The additional [production.yaml](./production.yaml) file configures additional service, e.g. PostgreSQL service, used
 by Keycloak, and other optimization options.
+
+## OAUTH
+
+The OAuth deployment builds on the default compose file and enables the OAuth service communication between Poolparty and GraphDB.
+To deploy the oauth configuration, run:
+
+```shell
+docker compose -f docker-compose.yaml -f oauth.yaml up -d
+```
+
+Here we use multiple compose files, where every file is merged with the previous one. By doing that, we add additional
+services or change configurations on existing ones.
+
+The additional [oauth.yaml](./oauth.yaml) file configures GraphDB for OAuth authentication and enables security, while for Poolparty enables oauth communication.
 
 ## Spark
 

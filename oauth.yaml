@@ -1,0 +1,17 @@
+services:
+  graphdb:
+    environment:
+      security__enabled:
+      graphdb__auth__openid__issuer:
+      graphdb__auth__openid__client_id: graphdb
+      graphdb__auth__openid__token_type: access
+      graphdb__auth__openid__username_claim: preferred_username
+      graphdb__auth__openid__auth_flow: code
+      graphdb__auth__openid__token_audience: graphdb
+      graphdb__auth__openid__require_audience: "true"
+      graphdb__auth__oauth__roles_claim: "resource_access.graphdb.roles"
+      graphdb__auth__oauth__default_roles: ROLE_USER
+
+  poolparty:
+    environment:
+      POOLPARTY_GRAPHDB_OAUTH_CLIENTID:
