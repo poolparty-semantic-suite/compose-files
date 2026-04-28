@@ -29,6 +29,7 @@ services:
       PPGS_KEYCLOAK_LOGIN_CLIENTSECRET: ${POOLPARTY_PPGS_KEYCLOAK_LOGIN_CLIENTSECRET}
       RECOMMENDER_KEYCLOAK_LOGIN_CLIENTSECRET:
       GRAPHDB_PUBLIC_URL:
+      KC_HEALTH_ENABLED: "true"
     ports:
       - "9000:9000"
       - "8080:8080"
@@ -37,6 +38,11 @@ services:
     command:
       - start-dev
       - --import-realm
+    healthcheck:
+      test: [ "CMD", "curl", "--fail", "http://localhost:9000/health/ready" ]
+      interval: 5s
+      timeout: 5s
+      retries: 3
 
   elasticsearch:
     image: ontotext/poolparty-elasticsearch:9.3.3
