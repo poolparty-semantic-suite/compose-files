@@ -39,7 +39,7 @@ _es_curl_error() {
 # Verifies ES is reachable; dies with an actionable message if not.
 require_es() {
     local exit_code=0
-    curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" "$ES_URL" > /dev/null 2>&1 || exit_code=$?
+    curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" "$ES_URL" > /dev/null 2>&1 || exit_code=$?
     [[ $exit_code -eq 0 ]] && return 0
     _es_curl_error "$exit_code" ""
     exit 1
@@ -50,7 +50,7 @@ require_es() {
 es_curl() {
     local endpoint="$1"; shift
     local response exit_code=0
-    response=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" "$ES_URL$endpoint" "$@" 2>/dev/null) \
+    response=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" "$ES_URL$endpoint" "$@" 2>/dev/null) \
         || exit_code=$?
     if [[ $exit_code -ne 0 ]]; then
         _es_curl_error "$exit_code" "$endpoint"

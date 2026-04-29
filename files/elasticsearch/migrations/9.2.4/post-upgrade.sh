@@ -28,10 +28,10 @@ if [[ -n "$red_indices" ]]; then
 fi
 echo "Index health check passed — no red indices"
 
-deadline=$((SECONDS + 120))
+deadline=$((SECONDS + ${HEALTH_TIMEOUT:-120}))
 status=""
 while [[ $SECONDS -lt $deadline ]]; do
-    status=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+    status=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
         "$ES_URL/_cluster/health" 2>/dev/null \
         | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
     health_ok "$status" && break

@@ -48,7 +48,7 @@ wait_for_healthy() {
     log "Waiting for cluster health: $required or better (timeout: ${HEALTH_TIMEOUT}s)..."
     while [[ $SECONDS -lt $deadline ]]; do
         local status
-        status=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+        status=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
             "$ES_URL/_cluster/health" 2>/dev/null \
             | grep -o '"status":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
         health_ok "$status" "$required" && { log "Cluster health: $status"; return 0; }
@@ -110,9 +110,10 @@ wait_for_shards_drained() {
     log "Waiting for primary shards to drain from '$node_name' (timeout: ${SHARD_DRAIN_TIMEOUT}s)..."
     while [[ $SECONDS -lt $deadline ]]; do
         local count
-        count=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+        count=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
             "$ES_URL/_cat/shards?h=node,prirep" 2>/dev/null \
-            | awk -v n="$node_name" '$1 == n && $2 == "p" {c++} END {print c+0}')
+            | awk -v n="$node_name" '$1 == n && $2 == "p" {c++} END {print c+0}') \
+            || count=1  # Treat unreachable ES as "not drained yet" rather than aborting
         [[ "$count" -eq 0 ]] && return 0
         log "  $count primary shard(s) still on '$node_name'..."
         sleep 10
@@ -126,7 +127,7 @@ wait_for_node_rejoin() {
     log "Waiting for node '$node_name' to rejoin (timeout: ${NODE_REJOIN_TIMEOUT}s)..."
     while [[ $SECONDS -lt $deadline ]]; do
         # Exact line match (-x) prevents 'elasticsearch' matching 'elasticsearch2'
-        curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+        curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
             "$ES_URL/_cat/nodes?h=name" 2>/dev/null \
             | grep -qxF "$node_name" \
             && { log "Node '$node_name' has rejoined"; return 0; }
@@ -179,7 +180,9 @@ rolling_restart() {
         fi
     done
 
-    wait_for_healthy
+    # Allocation is still restricted to primaries at this point (post-upgrade.sh re-enables
+    # replicas). Only require yellow — all primaries assigned — not green.
+    wait_for_healthy "yellow"
 }
 
 # ── Snapshot ──────────────────────────────────────────────────────────────────
@@ -201,7 +204,7 @@ take_snapshot() {
     local deadline=$((SECONDS + 1800))
     local state=""
     while [[ $SECONDS -lt $deadline ]]; do
-        state=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+        state=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
             "$ES_URL/_snapshot/$SNAPSHOT_REPO/$name" 2>/dev/null \
             | grep -o '"state":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
         case "$state" in
@@ -262,7 +265,7 @@ done
 
 require_es
 
-node_count=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" \
+node_count=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" \
     "$ES_URL/_cat/nodes?h=name" 2>/dev/null | wc -l | tr -d '[:space:]')
 node_count="${node_count:-1}"
 IS_CLUSTER=false
@@ -292,7 +295,7 @@ export EXPECTED_HEALTH_STATUS
 log "Upgrade path: $FROM_VERSION → $(IFS=' → '; echo "${steps[*]}")"
 
 if $SNAPSHOT; then
-    curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" "$ES_URL/_snapshot/$SNAPSHOT_REPO" \
+    curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" "$ES_URL/_snapshot/$SNAPSHOT_REPO" \
         > /dev/null 2>&1 || {
         echo "ERROR: Snapshot repository '$SNAPSHOT_REPO' was not found in Elasticsearch." >&2
         echo "  → Create the repository before running with --snapshot." >&2

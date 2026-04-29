@@ -72,6 +72,9 @@ All variables are optional unless marked required.
 | `POOLPARTY_INDEX_PASSWORD` | _(empty)_ | Basic auth password |
 | `ES_SERVICE_PATTERN` | `elasticsearch` | Prefix used to discover ES services in the compose file |
 | `SNAPSHOT_REPO` | `backup` | Name of an existing ES snapshot repository (required with `--snapshot`) |
+| `HEALTH_TIMEOUT` | `300` | Seconds to wait for cluster health after a restart (also used by post-upgrade scripts) |
+| `SHARD_DRAIN_TIMEOUT` | `600` | Seconds to wait for primary shards to drain from a node before restarting it |
+| `NODE_REJOIN_TIMEOUT` | `120` | Seconds to wait for a node to rejoin the cluster after restart |
 
 Credentials are read from the project `.env` file if not already set in the shell environment. A value set in the shell always takes precedence.
 

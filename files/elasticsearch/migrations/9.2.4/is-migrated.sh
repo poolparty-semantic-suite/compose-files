@@ -10,7 +10,7 @@ source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../lib.sh"
 
 TARGET="9.2.4"
 
-current=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]}" "$ES_URL" 2>/dev/null \
+current=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" "$ES_URL" 2>/dev/null \
     | grep -o '"number":"[^"]*"' | head -1 | cut -d'"' -f4 || true)
 
 if [[ -z "$current" ]]; then
