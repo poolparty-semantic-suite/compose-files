@@ -10,7 +10,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/../.." && pwd)"
 MIGRATIONS_DIR="$SCRIPT_DIR/migrations"
 ENV_FILE="$PROJECT_DIR/.env"
 SNAPSHOT_REPO="${SNAPSHOT_REPO:-backup}"
-KNOWN_VERSIONS=("8.19.13" "9.2.4")
+KNOWN_VERSIONS=("8.19.13" "9.2.5" "9.3.3")
 
 # Timeout overrides (seconds)
 SHARD_DRAIN_TIMEOUT="${SHARD_DRAIN_TIMEOUT:-600}"
@@ -251,8 +251,15 @@ done
 $version_known || die "Unknown target version '$TO_VERSION' (known: ${KNOWN_VERSIONS[*]})"
 
 steps=()
+_to_major="${TO_VERSION%%.*}"
 for v in "${KNOWN_VERSIONS[@]}"; do
     if [[ "$(printf '%s\n' "$FROM_VERSION" "$v" | sort -V | head -1)" == "$v" ]]; then
+        continue
+    fi
+    # Skip same-major intermediaries — versions in the same major as TO are
+    # independent targets, not mandatory waypoints (e.g. 9.2.5 is not a required
+    # stop on the way to 9.3.3; both are direct upgrade targets from 8.x).
+    if [[ "${v%%.*}" == "$_to_major" && "$v" != "$TO_VERSION" ]]; then
         continue
     fi
     steps+=("$v")

@@ -20,7 +20,7 @@ echo "Checking index health..."
 red_indices=$(es_curl "/_cat/indices?h=index,health&format=json" \
     | grep '"health":"red"' || true)
 if [[ -n "$red_indices" ]]; then
-    echo "ERROR: Found red indices after major version upgrade:" >&2
+    echo "ERROR: Found red indices after upgrade:" >&2
     echo "$red_indices" >&2
     echo "  → These indices have unassigned primary shards and may require manual recovery." >&2
     echo "  → Check: $ES_URL/_cat/indices?v&health=red" >&2
@@ -47,4 +47,4 @@ fi
 echo "Cluster health: $status"
 
 touch "$MARKER"
-echo "Migration to 9.2.4 marked complete"
+echo "Migration to 9.3.3 marked complete"

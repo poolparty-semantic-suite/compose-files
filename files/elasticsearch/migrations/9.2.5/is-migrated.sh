@@ -2,13 +2,13 @@
 set -euo pipefail
 
 MARKER="$(dirname "${BASH_SOURCE[0]}")/.done"
-[[ -f "$MARKER" ]] && { echo "Sentinel file found — migration to 9.2.4 was already completed. Skipping."; exit 0; }
+[[ -f "$MARKER" ]] && { echo "Sentinel file found — migration to 9.2.5 was already completed. Skipping."; exit 0; }
 
 ES_URL="${POOLPARTY_INDEX_URL:-http://localhost:9200}"
 # shellcheck source=../../lib.sh
 source "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/../../lib.sh"
 
-TARGET="9.2.4"
+TARGET="9.2.5"
 
 current=$(curl -sf --connect-timeout 10 "${_ES_CURL_AUTH[@]:+${_ES_CURL_AUTH[@]}}" "$ES_URL" 2>/dev/null \
     | grep -o '"number":"[^"]*"' | head -1 | cut -d'"' -f4 || true)

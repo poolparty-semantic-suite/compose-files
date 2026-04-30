@@ -13,7 +13,11 @@ files/elasticsearch/
       is-migrated.sh            # exits 0 if this version is already applied
       pre-upgrade.sh            # runs against the old node before restart
       post-upgrade.sh           # runs against the new node after restart
-    9.2.4/
+    9.2.5/
+      is-migrated.sh
+      pre-upgrade.sh
+      post-upgrade.sh
+    9.3.3/
       is-migrated.sh
       pre-upgrade.sh
       post-upgrade.sh
@@ -48,17 +52,17 @@ ELASTICSEARCH_VERSION=8.17.6   # must reflect what is actually running right now
 ## Quick start
 
 ```sh
-# Upgrade to 9.2.4 from the version currently in .env (auto-detected)
-./files/elasticsearch/upgrade-elasticsearch.sh --to 9.2.4
+# Upgrade to 9.3.3 from the version currently in .env (auto-detected)
+./files/elasticsearch/upgrade-elasticsearch.sh --to 9.3.3
 
 # Explicit from/to — useful when resuming a partial upgrade
-./files/elasticsearch/upgrade-elasticsearch.sh --from 8.17.6 --to 9.2.4
+./files/elasticsearch/upgrade-elasticsearch.sh --from 8.17.6 --to 9.3.3
 
 # Single hop only
 ./files/elasticsearch/upgrade-elasticsearch.sh --from 8.17.6 --to 8.19.13
 
 # Take a snapshot before each version step
-./files/elasticsearch/upgrade-elasticsearch.sh --to 9.2.4 --snapshot
+./files/elasticsearch/upgrade-elasticsearch.sh --to 9.3.3 --snapshot
 ```
 
 ## Environment variables
@@ -110,7 +114,7 @@ If `xpack.security.enabled=true` is set in the ES configuration, all API calls r
 ```sh
 # Via environment
 POOLPARTY_INDEX_USERNAME=elastic POOLPARTY_INDEX_PASSWORD=secret \
-  ./files/elasticsearch/upgrade-elasticsearch.sh --to 9.2.4
+  ./files/elasticsearch/upgrade-elasticsearch.sh --to 9.3.3
 
 # Or in .env (already supported — the orchestrator reads both vars from there)
 POOLPARTY_INDEX_USERNAME=elastic
@@ -128,7 +132,7 @@ Pass `--snapshot` to take a snapshot before each version step. The repository mu
 curl http://localhost:9200/_snapshot/backup
 
 # Run with snapshots
-SNAPSHOT_REPO=backup ./files/elasticsearch/upgrade-elasticsearch.sh --to 9.2.4 --snapshot
+SNAPSHOT_REPO=backup ./files/elasticsearch/upgrade-elasticsearch.sh --to 9.3.3 --snapshot
 ```
 
 Snapshots are named `pre-upgrade-to-<version>-<timestamp>` and polled until `SUCCESS` (30-minute timeout). A `FAILED` or `PARTIAL` result aborts the upgrade before any files are changed.
@@ -148,7 +152,7 @@ This means re-running the script after a partial failure skips any version steps
 
    **`is-migrated.sh`** — exits 0 if the migration is already applied:
    ```sh
-   cp -r migrations/9.2.4 migrations/<new-version>
+   cp -r migrations/9.3.3 migrations/<new-version>
    # Update MARKER path, TARGET version, and .done text
    ```
 
@@ -158,7 +162,7 @@ This means re-running the script after a partial failure skips any version steps
 
 2. Add the new version to `KNOWN_VERSIONS` in `upgrade-elasticsearch.sh` in ascending order:
    ```sh
-   KNOWN_VERSIONS=("8.19.13" "9.2.4" "<new-version>")
+   KNOWN_VERSIONS=("8.19.13" "9.2.5" "9.3.3" "<new-version>")
    ```
 
 3. Update `ELASTICSEARCH_VERSION` in `.env` if you need to start from a different base.
@@ -191,7 +195,7 @@ curl http://localhost:9200/_cluster/health
 curl "http://localhost:9200/_cat/shards?h=index,shard,prirep,state,node&v"
 ```
 
-**`critical deprecation(s) found` during 9.2.4 pre-upgrade**
+**`critical deprecation(s) found` during 9.x pre-upgrade**
 The running 8.x instance has breaking-change deprecations that must be resolved before the 8→9 jump. Review the output and address each item before re-running:
 ```sh
 curl http://localhost:9200/_migration/deprecations

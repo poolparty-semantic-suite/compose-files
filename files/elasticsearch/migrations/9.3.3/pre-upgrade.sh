@@ -11,8 +11,7 @@ echo "Checking deprecation warnings..."
 deprecations=$(es_curl "/_migration/deprecations")
 critical_count=$(echo "$deprecations" | grep -c '"level":"critical"' || true)
 if [[ "$critical_count" -gt 0 ]]; then
-    echo "ERROR: $critical_count critical deprecation(s) found — resolve before upgrading to 9.x." >&2
-    # Print the raw JSON; the endpoint URL below can be used for a formatted view
+    echo "ERROR: $critical_count critical deprecation(s) found — resolve before upgrading." >&2
     echo "$deprecations" >&2
     echo "  → For readable output: curl -s '$ES_URL/_migration/deprecations' | python3 -m json.tool" >&2
     exit 1
