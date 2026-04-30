@@ -12,6 +12,10 @@ services:
       - "${PROXY_CONFIG_PATH}:/etc/nginx/templates/proxy.conf.template"
     ports:
       - "80:80"
+    depends_on:
+      - graphdb
+      - poolparty
+      - keycloak
 
   keycloak:
     image: ontotext/poolparty-keycloak:2.3.0
@@ -26,7 +30,6 @@ services:
       POOLPARTY_SUPER_ADMIN_PASSWORD:
       POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET:
       POOLPARTY_GRAPHDB_URL:
-      KC_HEALTH_ENABLED: "true"
     ports:
       - "9000:9000"
       - "8080:8080"
@@ -35,11 +38,6 @@ services:
     command:
       - start-dev
       - --import-realm
-    healthcheck:
-      test: [ "CMD", "curl", "--fail", "http://localhost:9000/health/ready" ]
-      interval: 5s
-      timeout: 5s
-      retries: 3
 
   elasticsearch:
     image: ontotext/poolparty-elasticsearch:${ELASTICSEARCH_VERSION}
@@ -73,9 +71,11 @@ services:
       - graphdb_data:/opt/graphdb/home
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:7200/protocol" ]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 10
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
 
   poolparty:
     image: ontotext/poolparty:10.2.1

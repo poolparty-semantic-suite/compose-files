@@ -118,6 +118,11 @@ services or change configurations on existing ones.
 
 The additional [oauth.yaml](./oauth.yaml) file configures GraphDB for OAuth authentication and enables security, while for Poolparty enables oauth communication.
 
+### Important Notes
+
+1. For Keycloak compose configuration, a health check has been added to the `keycloak` service. It depends on the context path where the service is exposed. This reflects in this path: ```/auth/health/ready``` where the ```/auth``` is the current context defined in ngix configuration.
+2. GraphDB compose configuration, includes issuer configuration that must match the ```KC_HOSTNAME``` value in terms of host name. For this reason an additional ```extra_hosts``` configuration has been added. Instead of this configuration, ```graphdb.auth.openid.well_known_config_url``` could be used to define the configuration source so that ```KC_HOSTNAME``` and ```graphdb.auth.openid.issuer``` can match in the docker installation.
+
 ## Spark
 
 Starting PoolParty 10, support for external Spark service was added. If needed any of the above deployments can be
