@@ -1,10 +1,13 @@
 services:
   graphdb:
+    restart: unless-stopped
     environment:
-      security__enabled:
+      GDB_JAVA_OPTS: >-
+        -Dsecurity.enabled=true
       graphdb__auth__methods: openid
       graphdb__auth__database: oauth
       graphdb__auth__openid__issuer:
+      graphdb__auth__openid__well_known_config_url:
       graphdb__auth__openid__client_id: graphdb
       graphdb__auth__openid__token_type: access
       graphdb__auth__openid__username_claim: preferred_username
@@ -16,6 +19,18 @@ services:
     depends_on:
       keycloak:
         condition: service_healthy
+
+  keycloak:
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "{ printf 'HEAD /auth/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
+        ]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 30s
 
   poolparty:
     environment:
