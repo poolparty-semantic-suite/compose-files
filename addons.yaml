@@ -17,6 +17,8 @@ services:
     image: ontotext/semantic-workbench:2.4.2
     restart: unless-stopped
     environment:
+      spring.security.oauth2.client.provider.keycloak.authorization-uri: ${SERVER_URL}/auth/realms/poolparty/protocol/openid-connect/auth
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SERVER_URL}/auth/realms/poolparty
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
       POOLPARTY_URL: "${SERVER_URL}"
