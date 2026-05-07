@@ -11,7 +11,7 @@ response=$(es_curl "/_cluster/settings" \
     -X PUT \
     -H 'Content-Type: application/json' \
     -d '{"persistent":{"cluster.routing.allocation.enable":"primaries"}}')
-echo "$response" | grep -q '"acknowledged":true' \
+echo "$response" | grep -q '"acknowledged"\s*:\s*true' \
     || { echo "ERROR: Cluster settings update was not acknowledged by Elasticsearch." >&2; exit 1; }
 echo "Shard allocation restricted to primaries"
 
