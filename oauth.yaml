@@ -4,18 +4,18 @@ services:
     environment:
       GDB_JAVA_OPTS: >-
         -Dsecurity.enabled=true
-      graphdb__auth__methods: openid
-      graphdb__auth__database: oauth
+      graphdb__auth__methods:
+      graphdb__auth__database:
       graphdb__auth__openid__issuer:
       graphdb__auth__openid__well_known_config_url:
-      graphdb__auth__openid__client_id: graphdb
-      graphdb__auth__openid__token_type: access
-      graphdb__auth__openid__username_claim: preferred_username
-      graphdb__auth__openid__auth_flow: code
-      graphdb__auth__openid__token_audience: graphdb
-      graphdb__auth__openid__require_audience: "true"
-      graphdb__auth__oauth__roles_claim: "resource_access.graphdb.roles"
-      graphdb__auth__oauth__default_roles: ROLE_USER
+      graphdb__auth__openid__client_id:
+      graphdb__auth__openid__token_type:
+      graphdb__auth__openid__username_claim:
+      graphdb__auth__openid__auth_flow:
+      graphdb__auth__openid__token_audience:
+      graphdb__auth__openid__require_audience:
+      graphdb__auth__oauth__roles_claim:
+      graphdb__auth__oauth__default_roles:
     depends_on:
       keycloak:
         condition: service_healthy
