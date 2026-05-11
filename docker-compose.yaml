@@ -28,7 +28,6 @@ services:
       KEYCLOAK_ADMIN_PASSWORD:
       POOLPARTY_SUPER_ADMIN_PASSWORD:
       POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET:
-      POOLPARTY_GRAPHDB_URL:
       GRAPHDB_PUBLIC_URL:
     ports:
       - "9000:9000"
@@ -86,6 +85,9 @@ services:
       retries: 10
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
   poolparty:
     image: ontotext/poolparty:10.2.1
