@@ -22,15 +22,11 @@ services:
 
   keycloak:
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "{ printf 'HEAD /auth/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
-        ]
+      test: "bash -c 'exec 3<>/dev/tcp/localhost/8080; echo -e \"GET /realms/poolparty/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost:8080\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep \"HTTP/1.1 200\" <&3; exec 3<&-;'"
       interval: 5s
-      timeout: 3s
+      timeout: 10s
       retries: 10
-      start_period: 30s
+      start_period: 10s
 
   poolparty:
     environment:
