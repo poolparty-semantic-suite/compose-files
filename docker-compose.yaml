@@ -43,9 +43,9 @@ services:
           "CMD-SHELL",
           "{ printf 'HEAD /auth/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
         ]
-      interval: 5s
+      interval: 10s
       timeout: 10s
-      retries: 20
+      retries: 30
       start_period: 10s
     command:
       - start-dev
