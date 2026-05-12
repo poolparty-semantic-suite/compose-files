@@ -45,7 +45,7 @@ services:
         ]
       interval: 5s
       timeout: 10s
-      retries: 10
+      retries: 20
       start_period: 10s
     command:
       - start-dev
@@ -85,7 +85,7 @@ services:
       test: [ "CMD", "curl", "--fail", "http://localhost:7200/protocol" ]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 20
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
 

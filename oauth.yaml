@@ -25,7 +25,7 @@ services:
       test: "bash -c 'exec 3<>/dev/tcp/localhost/9000; printf \"GET /auth/health/ready HTTP/1.1\\r\\nHost: localhost:9000\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3 || exit 1; exec 3<&-; exec 3<>/dev/tcp/localhost/8080; printf \"GET /auth/realms/poolparty/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost:8080\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"HTTP/1.1 200\" <&3 || exit 1; exec 3<&-;'"
       interval: 5s
       timeout: 10s
-      retries: 10
+      retries: 20
       start_period: 10s
 
   poolparty:
