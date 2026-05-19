@@ -110,7 +110,7 @@ Starting PoolParty 10, support for external Spark service was added. If needed a
 extended with an external Spark. To do that run a command similar to the following:
 
 ```shell
-docker compose up -f docker-compose.yaml -f spark.yaml up -d
+docker compose -f docker-compose.yaml -f spark.yaml up -d
 ```
 
 ## Running with SSL
