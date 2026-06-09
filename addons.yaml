@@ -70,7 +70,7 @@ services:
       - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
 
   unified-views:
-    image: ontotext/unifiedviews:10.2.1
+    image: ontotext/unifiedviews:10.2.2
     restart: unless-stopped
     depends_on:
       - rdf4j
