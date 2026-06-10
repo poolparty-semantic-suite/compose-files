@@ -150,6 +150,28 @@ docker compose -f docker-compose.yaml -f addons.yaml up -d
 You need to provide PoolParty license with UnifiedViews features enabled.  
 Also you might want to use custom `.properties` file with your specific configurations.
 
+### Deploying UnifiedViews on a separate host
+
+UnifiedViews (and `rdf4j`) can be deployed on a dedicated host using [unified-views.yaml](./unified-views.yaml). 
+The compose file is self-contained: it includes its own nginx proxy, rdf4j, and unified-views — no other compose files need to be layered on top.
+
+1. Copy this repository to the remote host.
+2. Copy `.env_template` to `.env` and configure:
+   - `SERVER_NAME` — DNS/IP of the **UV host itself** (what users browse).
+   - `UNIFIEDVIEWS_LICENSE` — path to a valid UV license on the remote host.
+   - `UV_PROXY_CONFIG_PATH` — defaults to `./files/nginx/uv-proxy.conf`.
+   - The main PoolParty host must be reachable from the UV and rdf4j
+     containers by its DNS name (used for the PoolParty API, Keycloak, and
+     SPARQL federation). If that FQDN does not resolve from the UV host
+     (private DNS, internal-only IP), set `POOLPARTY_SERVER_NAME` +
+     `POOLPARTY_HOST_IP` in `.env` and uncomment the `extra_hosts` blocks
+     on both services in `unified-views.yaml`.
+3. Start the stack:
+   ```shell
+   docker compose -f unified-views.yaml up -d
+   ```
+4. UV will be reachable at `http://<SERVER_NAME>/UnifiedViews`.
+
 ## Services URLs
 
 After deploying the services, they should be accessible at:
