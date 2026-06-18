@@ -35,7 +35,7 @@ services:
       - --import-realm
 
   elasticsearch:
-    image: ontotext/poolparty-elasticsearch:${ELASTICSEARCH_VERSION}
+    image: ontotext/poolparty-elasticsearch:9.3.3
     environment:
       discovery.type:
       xpack.security.enabled:
