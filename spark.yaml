@@ -1,12 +1,12 @@
 services:
   spark:
-    image: apache/spark:4.0.1
+    image: apache/spark:4.1.2
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     environment:
       SPARK_NO_DAEMONIZE: "true"
 
   spark-worker:
-    image: apache/spark:4.0.1
+    image: apache/spark:4.1.2
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark:7077 --memory 1G --cores 1
     environment:
       SPARK_NO_DAEMONIZE: "true"
