@@ -61,6 +61,12 @@ first login you'll be asked to change this password.
 
 Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
 
+## Advanced installations
+
+Compose definitions can be customized to fit different needs. The default compose file is a good starting point, but it's not suitable for production environments as it lacks robust security, high availability, and monitoring.
+
+For advanced installations we use multiple compose files, where every file is merged with the previous one. By doing that, we add additional services or change configurations on existing ones.
+
 ## Development
 
 This should be used only for development, testing, and evaluation purposes. The services are configured with less 
@@ -98,29 +104,23 @@ The production deployment builds on the default compose file. To deploy the prod
 docker compose -f docker-compose.yaml -f production.yaml up -d
 ```
 
-Here we use multiple compose files, where every file is merged with the previous one. By doing that, we add additional
-services or change configurations on existing ones.
-
 The additional [production.yaml](./production.yaml) file configures additional service, e.g. PostgreSQL service, used
 by Keycloak, and other optimization options.
 
 ## OAUTH
 
-The OAuth deployment builds on the default compose file and enables the OAuth service communication between Poolparty and GraphDB.
+The OAuth deployment builds on the default compose file and enables the OAuth service communication between Graph Modeling (PoolParty) and GraphDB.
 To deploy the oauth configuration, run:
 
 ```shell
 docker compose -f docker-compose.yaml -f oauth.yaml up -d
 ```
 
-Here we use multiple compose files, where every file is merged with the previous one. By doing that, we add additional
-services or change configurations on existing ones.
-
-The additional [oauth.yaml](./oauth.yaml) file configures GraphDB for OAuth authentication and enables security, while for Poolparty enables oauth communication.
+The additional [oauth.yaml](./oauth.yaml) file configures GraphDB for OAuth authentication and enables security, while for Graph Modeling (PoolParty) enables oauth communication.
 
 ### Important Notes
 
-1. For Keycloak compose configuration, a health check has been added to the `keycloak` service. It depends on the context path where the service is exposed. This reflects in this path: ```/auth/health/ready``` where the ```/auth``` is the current context defined in ngix configuration.
+1. For Keycloak compose configuration, a health check has been added to the `keycloak` service. It depends on the context path where the service is exposed. This reflects in this path: ```/auth/health/ready``` where the ```/auth``` is the current context defined in nginx configuration. Note that the ```/auth``` is controlled by the ```KC_HTTP_RELATIVE_PATH``` environment variable.
 2. GraphDB compose configuration, includes issuer configuration that must match the ```KC_HOSTNAME``` value in terms of host name. For this reason an additional ```extra_hosts``` configuration has been added. Instead of this configuration, ```graphdb.auth.openid.well_known_config_url``` could be used to define the configuration source so that ```KC_HOSTNAME``` and ```graphdb.auth.openid.issuer``` can match in the docker installation.
 
 ## Spark

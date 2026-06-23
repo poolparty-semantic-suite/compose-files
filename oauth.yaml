@@ -16,13 +16,10 @@ services:
       graphdb__auth__openid__require_audience:
       graphdb__auth__oauth__roles_claim:
       graphdb__auth__oauth__default_roles:
-    depends_on:
-      keycloak:
-        condition: service_healthy
 
   keycloak:
     healthcheck:
-      test: "bash -c 'exec 3<>/dev/tcp/localhost/9000; printf \"GET /auth/health/ready HTTP/1.1\\r\\nHost: localhost:9000\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3 || exit 1; exec 3<&-; exec 3<>/dev/tcp/localhost/8080; printf \"GET /auth/realms/poolparty/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost:8080\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"HTTP/1.1 200\" <&3 || exit 1; exec 3<&-;'"
+      test: "bash -c 'exec 3<>/dev/tcp/localhost/9000; printf \"GET ${KC_HTTP_RELATIVE_PATH}/health/ready HTTP/1.1\\r\\nHost: localhost:9000\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3 || exit 1; exec 3<&-; exec 3<>/dev/tcp/localhost/8080; printf \"GET ${KC_HTTP_RELATIVE_PATH}/realms/poolparty/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost:8080\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"HTTP/1.1 200\" <&3 || exit 1; exec 3<&-;'"
       interval: 10s
       timeout: 10s
       retries: 30
@@ -31,6 +28,3 @@ services:
   poolparty:
     environment:
       POOLPARTY_GRAPHDB_OAUTH_CLIENTID:
-    depends_on:
-      keycloak:
-        condition: service_healthy
