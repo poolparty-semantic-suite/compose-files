@@ -14,7 +14,6 @@ services:
       - "80:80"
     depends_on:
       - poolparty
-      - keycloak
 
   keycloak:
     image: ontotext/poolparty-keycloak:2.5.0
@@ -41,7 +40,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "{ printf 'HEAD /auth/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
+          "{ printf 'HEAD ${KC_HTTP_RELATIVE_PATH}/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
         ]
       interval: 10s
       timeout: 10s
