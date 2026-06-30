@@ -1,9 +1,14 @@
 services:
   adf:
+    # Requires ADF >= 1.9.0 for KEYCLOAK_PUBLIC_URL / KEYCLOAK_INTERNAL_URL support.
     image: ontotext/adf:1.8.2
     restart: unless-stopped
     environment:
-      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
+      KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
+      KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
+      # Deprecated: kept for older ADF images and custom overrides. Maps to internal URL.
+      # Planned for removal after two minor releases once ADF >= 1.9.0 is the minimum version.
+      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
       POOLPARTY_URL: "${SERVER_URL}"
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
@@ -14,13 +19,20 @@ services:
       - adf_data:/var/lib/adf
 
   semantic-workbench:
+    # Requires semantic-workbench >= 2.5.0 for KEYCLOAK_PUBLIC_URL / KEYCLOAK_INTERNAL_URL support.
     image: ontotext/semantic-workbench:2.4.2
     restart: unless-stopped
     environment:
-      spring.security.oauth2.client.provider.keycloak.authorization-uri: ${SERVER_URL}/auth/realms/poolparty/protocol/openid-connect/auth
-      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SERVER_URL}/auth/realms/poolparty
-      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_AUTHURL}"
+      KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
+      KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
+      # Deprecated: kept for older Semantic Workbench images and custom overrides. Maps to internal URL.
+      # Planned for removal after two minor releases once semantic-workbench >= 2.5.0 is the minimum version.
+      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
+      # Deprecated: compose workaround for Semantic Workbench < 2.5.0 (replaced by KEYCLOAK_PUBLIC_URL in the app).
+      # Redundant when using semantic-workbench >= 2.5.0. Planned for removal.
+      spring.security.oauth2.client.provider.keycloak.authorization-uri: ${SERVER_URL}/auth/realms/${POOLPARTY_KEYCLOAK_LOGIN_REALM}/protocol/openid-connect/auth
+      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SERVER_URL}/auth/realms/${POOLPARTY_KEYCLOAK_LOGIN_REALM}
       POOLPARTY_URL: "${SERVER_URL}"
       SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_KEYCLOAK_LOGIN_CLIENTSECRET}"
       POOLPARTY_LICENSE_PATH: "/usr/share/semantic-workbench"
