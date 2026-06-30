@@ -35,7 +35,7 @@ services:
       - --import-realm
 
   elasticsearch:
-    image: ontotext/poolparty-elasticsearch:${ELASTICSEARCH_VERSION}
+    image: ontotext/poolparty-elasticsearch:9.3.3
     environment:
       discovery.type:
       xpack.security.enabled:
@@ -71,7 +71,7 @@ services:
       retries: 3
 
   poolparty:
-    image: ontotext/poolparty:10.2.1
+    image: ontotext/poolparty:10.2.2
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS:
