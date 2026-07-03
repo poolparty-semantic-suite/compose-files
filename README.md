@@ -7,6 +7,11 @@ the service.
 Docker compose allows chaining multiple service definition files, allowing the creation of multiple flavors, e.g.
 development, stage, and production.
 
+> [!IMPORTANT]
+> When using this repository, check out the release tag that matches the PoolParty version you want to run instead of
+> using the `main` branch. The `main` branch is used for ongoing development and may contain breaking changes at any
+> time.
+
 There are several files in this repository:
 * `docker-compose.yaml` this file should be used only for evaluation and testing purposes - it's not sutable for production
 * `production.yaml` this build on the default configuration, by adding additional services and configuration
