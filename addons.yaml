@@ -34,7 +34,7 @@ services:
       - semantic-workbench_data:/var/lib/semantic-workbench
 
   graphviews:
-    image: ontotext/graphviews:1.0.0
+    image: ontotext/graphviews:1.0.1
     restart: unless-stopped
     environment:
       PP_USERNAME: superadmin
