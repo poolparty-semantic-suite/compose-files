@@ -63,6 +63,12 @@ Other notable variable are:
 recommended to be changed in production environments.
 * `POOLPARTY_SUPER_ADMIN_PASSWORD`: this is the password for the `superadmin` in PoolParty, default `poolparty`. After the
 first login you'll be asked to change this password.
+* `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`: internal Docker URL for server-to-server Keycloak calls (default `http://keycloak:8080/auth`). Used by PoolParty and addon services for token/JWKS/introspection.
+* `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL`: public browser-facing Keycloak URL (default `${SERVER_URL}/auth`). Used by ADF and Semantic Workbench for OAuth redirects.
+* `POOLPARTY_KEYCLOAK_AUTHURL`: backward-compatible alias for the internal URL, used by PoolParty.
+* `KEYCLOAK_URL` (in `addons.yaml`, deprecated): alias of the internal URL for older ADF/Semantic Workbench images. Prefer `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL` and `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`.
+* `spring.security.oauth2.client.provider.keycloak.authorization-uri` and `spring.security.oauth2.resourceserver.jwt.issuer-uri` (in `addons.yaml` for Semantic Workbench, deprecated): pre-existing compose workaround for Semantic Workbench versions before 2.5.0. Redundant on 2.5.0+ but kept for backward compatibility during transition.
+* `SERVER_NAME`: hostname used to access PoolParty from the browser (default `poolparty.127.0.0.1.nip.io`).
 
 Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
 
