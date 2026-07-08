@@ -14,7 +14,7 @@ services:
       - "80:80"
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.3.0
+    image: ontotext/poolparty-keycloak:2.5.0
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -76,7 +76,7 @@ services:
       retries: 3
 
   poolparty:
-    image: ontotext/poolparty:10.2.2
+    image: ontotext/poolparty:10.3.0
     environment:
       JAVA_TOOL_OPTIONS: >-
         -Dpoolparty.llm.api=openai-completions
