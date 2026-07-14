@@ -49,7 +49,7 @@ services:
     mem_limit: 10g
 
   graphdb:
-    image: ontotext/graphdb:11.4.0
+    image: ontotext/graphdb:11.4.1
     environment:
       USE_SYSTEM_CA_CERTS: yes
       graphdb__home: /opt/graphdb/home
