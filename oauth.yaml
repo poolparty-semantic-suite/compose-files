@@ -28,3 +28,4 @@ services:
   poolparty:
     environment:
       POOLPARTY_GRAPHDB_OAUTH_CLIENTID:
+      POOLPARTY_GRAPHDB_OAUTH_SCOPES:
