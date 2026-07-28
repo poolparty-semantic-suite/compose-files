@@ -16,6 +16,9 @@ services:
       graphdb__auth__openid__require_audience:
       graphdb__auth__oauth__roles_claim:
       graphdb__auth__oauth__default_roles:
+    depends_on:
+      keycloak:
+        condition: service_healthy
 
   keycloak:
     healthcheck:
