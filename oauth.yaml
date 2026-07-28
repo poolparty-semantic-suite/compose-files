@@ -1,0 +1,31 @@
+services:
+  graphdb:
+    restart: unless-stopped
+    environment:
+      GDB_JAVA_OPTS: >-
+        -Dsecurity.enabled=true
+      graphdb__auth__methods:
+      graphdb__auth__database:
+      graphdb__auth__openid__issuer:
+      graphdb__auth__openid__well_known_config_url:
+      graphdb__auth__openid__client_id:
+      graphdb__auth__openid__token_type:
+      graphdb__auth__openid__username_claim:
+      graphdb__auth__openid__auth_flow:
+      graphdb__auth__openid__token_audience:
+      graphdb__auth__openid__require_audience:
+      graphdb__auth__oauth__roles_claim:
+      graphdb__auth__oauth__default_roles:
+
+  keycloak:
+    healthcheck:
+      test: "bash -c 'exec 3<>/dev/tcp/localhost/9000; printf \"GET ${KC_HTTP_RELATIVE_PATH}/health/ready HTTP/1.1\\r\\nHost: localhost:9000\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"200\" <&3 || exit 1; exec 3<&-; exec 3<>/dev/tcp/localhost/8080; printf \"GET ${KC_HTTP_RELATIVE_PATH}/realms/poolparty/.well-known/openid-configuration HTTP/1.1\\r\\nHost: localhost:8080\\r\\nConnection: close\\r\\n\\r\\n\" >&3; grep -q \"HTTP/1.1 200\" <&3 || exit 1; exec 3<&-;'"
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 10s
+
+  poolparty:
+    environment:
+      POOLPARTY_GRAPHDB_OAUTH_CLIENTID:
+      POOLPARTY_GRAPHDB_OAUTH_SCOPES:

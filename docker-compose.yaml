@@ -12,6 +12,8 @@ services:
       - "${PROXY_CONFIG_PATH}:/etc/nginx/templates/proxy.conf.template"
     ports:
       - "80:80"
+    depends_on:
+      - poolparty
 
   keycloak:
     image: ontotext/poolparty-keycloak:2.5.0
@@ -34,6 +36,16 @@ services:
       - "8080:8080"
     volumes:
       - keycloak_data:/opt/keycloak/data
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "{ printf 'HEAD ${KC_HTTP_RELATIVE_PATH}/health/ready HTTP/1.0\r\n\r\n' >&0; grep -q '200'; } 0<>/dev/tcp/localhost/9000"
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+      start_period: 10s
     command:
       - start-dev
       - --import-realm
@@ -70,9 +82,11 @@ services:
       - graphdb_data:/opt/graphdb/home
     healthcheck:
       test: [ "CMD", "curl", "--fail", "http://localhost:7200/protocol" ]
-      interval: 5s
+      interval: 10s
       timeout: 5s
-      retries: 3
+      retries: 20
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
 
   poolparty:
     image: ontotext/poolparty:10.3.0
