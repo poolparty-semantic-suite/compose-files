@@ -44,7 +44,7 @@ services:
       - "5678:${N8N_PORT}"
     volumes:
       - n8n_data:/home/node/.n8n
-      - filevolume:/home/node/.n8n-files
+      - n8n_shared_data:/home/node/.n8n-files
 
   n8n-runner-1: &n8n-runner
     #Based on n8nio/runners:2.22.4
@@ -60,7 +60,7 @@ services:
       N8N_RUNNERS_MAX_CONCURRENCY:
     volumes:
       - n8n_data:/home/node/.n8n
-      - filevolume:/home/node/.n8n-files
+      - n8n_shared_data:/home/node/.n8n-files
 
   n8n-runner-2:
     <<: *n8n-runner
@@ -83,4 +83,4 @@ services:
 volumes:
   n8n_postgres_data:
   n8n_data:
-  filevolume:
+  n8n_shared_data:
