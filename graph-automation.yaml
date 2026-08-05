@@ -39,6 +39,7 @@ services:
       N8N_RUNNERS_BROKER_ENABLED:
       N8N_RUNNERS_BROKER_PORT:
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS:
+      N8N_RUNNERS_TASK_REQUEST_TIMEOUT:
     ports:
       - "5678:${N8N_PORT}"
     volumes:
@@ -53,10 +54,10 @@ services:
       - n8n
     environment:
       N8N_RUNNERS_AUTH_TOKEN:
-      N8N_RUNNERS_TASK_BROKER_URI: http://n8n:5679
-      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT: 3600
-      N8N_RUNNERS_TASK_TIMEOUT: 3600
-      N8N_RUNNERS_MAX_CONCURRENCY: 5
+      N8N_RUNNERS_TASK_BROKER_URI:
+      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT:
+      N8N_RUNNERS_TASK_TIMEOUT:
+      N8N_RUNNERS_MAX_CONCURRENCY:
     volumes:
       - n8n_data:/home/node/.n8n
       - filevolume:/home/node/.n8n-files
