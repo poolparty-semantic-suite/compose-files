@@ -5,7 +5,7 @@ services:
 
   n8n:
     #Based on n8nio/n8n:2.22.4
-    image: maven.ontotext.com/graphwise-workflows:0.0.1-TR1
+    image: maven.ontotext.com/graphwise-workflows:1.0.0-M1
     depends_on:
       - postgres
     restart: unless-stopped
@@ -48,7 +48,7 @@ services:
 
   n8n-runner-1: &n8n-runner
     #Based on n8nio/runners:2.22.4
-    image: maven.ontotext.com/graphwise-runners:0.0.1-TR1
+    image: maven.ontotext.com/graphwise-runners:1.0.0-M1
     restart: unless-stopped
     depends_on:
       - n8n
