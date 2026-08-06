@@ -160,13 +160,18 @@ Before starting, review the N8N-related variables in [.env_template](./.env_temp
 
 * `N8N_LICENSE_ACTIVATION_KEY` / `N8N_LICENSE_TENANT_ID`: license credentials for Graph Automation.
 * `N8N_ENCRYPTION_KEY`: encryption key for credentials stored by n8n. Change this before production use and keep it stable across restarts.
-* `N8N_RUNNERS_AUTH_TOKEN`: shared secret between the n8n service and the external runners. Change the default value.
+* `N8N_RUNNERS_AUTH_TOKEN`: shared secret used by a task runner to authenticate to n8n. Change the default value.
 * `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD`: credentials for the Graph Automation PostgreSQL database.
+* `N8N_RUNNERS_TASK_REQUEST_TIMEOUT` / `N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT` / `N8N_RUNNERS_TASK_TIMEOUT`: different runner related timeouts. Depending on workflows and their usage of codenodes this timeouts can cause hard failure in long running tasks unless properly configured.
 
 The proxy automatically mounts [files/nginx/addons/n8n.conf](./files/nginx/addons/n8n.conf), so no manual copy into
 `extra_includes` is required.
 
 After the services are up, Graph Automation is available at `http(s)://<server-name>/n8n/`.
+
+The custom graphwise task runners build on the default n8n task runners. They include additional support of the following libraries:
+- JavaScript: moment
+- Python: numpy, pandas. rdflib, requests, uuid, lxml, beautifulsoup4, html2text, markitdown[all]
 
 For additional details on configuring task runners check: [task runner variables](https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/use-environment-variables/task-runners)
 ## Running with SSL
