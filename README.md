@@ -18,6 +18,7 @@ There are several files in this repository:
 * `spark.yaml` if desired, a separate spark instance can be deployed
 * `ssl.yaml` add support for ssl to the proxy service
 * `addons.yaml` provides additional services which extend the standard PoolParty functionality
+* `graph-automation.yaml` deploys Graph Automation (n8n-based workflow automation) with external runners and PostgreSQL
 
 The basic docker compose commands are:
 
@@ -143,6 +144,36 @@ extended with an external Spark. To do that run a command similar to the followi
 docker compose -f docker-compose.yaml -f spark.yaml up -d
 ```
 
+## Graph Automation
+
+Graph Automation provides workflow automation based on n8n. The [graph-automation.yaml](./graph-automation.yaml)
+compose file adds the Graph Automation UI/API, two external task runners, a dedicated PostgreSQL database, and
+nginx routing for the `/n8n/` context path.
+
+To deploy Graph Automation alongside the default stack, run:
+
+```shell
+docker compose -f docker-compose.yaml -f graph-automation.yaml up -d
+```
+
+Before starting, review the N8N-related variables in [.env_template](./.env_template). Notable settings:
+
+* `N8N_LICENSE_ACTIVATION_KEY` / `N8N_LICENSE_TENANT_ID`: license credentials for Graph Automation.
+* `N8N_ENCRYPTION_KEY`: encryption key for credentials stored by n8n. Change this before production use and keep it stable across restarts.
+* `N8N_RUNNERS_AUTH_TOKEN`: shared secret used by a task runner to authenticate to n8n. Change the default value.
+* `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD`: credentials for the Graph Automation PostgreSQL database.
+* `N8N_RUNNERS_TASK_REQUEST_TIMEOUT` / `N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT` / `N8N_RUNNERS_TASK_TIMEOUT`: different runner related timeouts. Depending on workflows and their usage of codenodes this timeouts can cause hard failure in long running tasks unless properly configured.
+
+The proxy automatically mounts [files/nginx/addons/n8n.conf](./files/nginx/addons/n8n.conf), so no manual copy into
+`extra_includes` is required.
+
+After the services are up, Graph Automation is available at `http(s)://<server-name>/n8n/`.
+
+The custom graphwise task runners build on the default n8n task runners. They include additional support of the following libraries:
+- JavaScript: moment
+- Python: numpy, pandas. rdflib, requests, uuid, lxml, beautifulsoup4, html2text, markitdown[all]
+
+For additional details on configuring task runners check: [task runner variables](https://docs.n8n.io/deploy/host-n8n/configure-n8n/basic-configuration/use-environment-variables/task-runners)
 ## Running with SSL
 
 In order to run the `proxy` service with SSL enabled, you will need to:
@@ -214,6 +245,7 @@ After deploying the services, they should be accessible at:
 - GraphViews - `http(s)://<server-name>/GraphViews`
 - Mirror App - `http(s)://<server-name>/PoolParty/mirror/ui`
 - Unified Views - `http(s)://<server-name>/UnifiedViews`
+- Graph Automation - `http(s)://<server-name>/n8n/`
 
 # Stopping services
 
