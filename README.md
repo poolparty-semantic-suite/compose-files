@@ -238,3 +238,16 @@ You can use `docker compose logs -f [SERVICE]`, to follow the log as it's update
 # Migration
 
 [Upgrading PoolParty 9.7 to 10](https://help.graphwise.ai/pp10.0/en/graphwise-documentation/how-to-install---manage-graphwise-components/installation---migration/poolparty-2025-r2--9-7--to-poolparty-10-migration-guide.html)
+
+## Keycloak Automated Migrations & Troubleshooting
+
+Starting with Keycloak image `2.6.0`, schema and realm upgrades are executed automatically on container startup via an internal migration orchestrator.
+
+### Hardware Dependency & Timeout Considerations
+- **Execution Duration**: The migration runtime depends significantly on available hardware resources (CPU, I/O performance, and database latency).
+- **Background Execution**: In resource-constrained environments, migration scripts may continue executing in the background even if the container healthcheck temporarily exceeds its readiness interval.
+- **Verification via Logs**: If the `keycloak` service takes longer to report healthy status, inspect the migration progress directly.
+- **Idempotency & Reattempts**: All migration steps are strictly idempotent. If a startup is interrupted or times out during the initial run, re-running `docker compose up -d` is safe and will quickly resume or fast-forward through already-applied migration steps.
+
+
+
