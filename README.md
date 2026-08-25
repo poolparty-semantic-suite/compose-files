@@ -248,6 +248,3 @@ Starting with Keycloak image `2.6.0`, schema and realm upgrades are executed aut
 - **Background Execution**: In resource-constrained environments, migration scripts may continue executing in the background even if the container healthcheck temporarily exceeds its readiness interval.
 - **Verification via Logs**: If the `keycloak` service takes longer to report healthy status, inspect the migration progress directly.
 - **Idempotency & Reattempts**: All migration steps are strictly idempotent. If a startup is interrupted or times out during the initial run, re-running `docker compose up -d` is safe and will quickly resume or fast-forward through already-applied migration steps.
-
-
-
