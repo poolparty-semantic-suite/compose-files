@@ -1,4 +1,4 @@
-# [10.4.0] - 2026-08-25
+# [1.4.0] - 2026-08-25
 
 ## Configuration Changes
 - Added support for Keycloak 2.6.0 automated migration parameters in `.env_template`:
