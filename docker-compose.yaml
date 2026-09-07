@@ -16,7 +16,7 @@ services:
       - poolparty
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.6.0
+    image: ontotext/poolparty-keycloak:2.6.1
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -53,7 +53,7 @@ services:
       - --import-realm
 
   elasticsearch:
-    image: ontotext/poolparty-elasticsearch:9.3.8
+    image: ontotext/poolparty-elasticsearch:9.4.5
     environment:
       discovery.type:
       xpack.security.enabled:
@@ -67,7 +67,7 @@ services:
     mem_limit: 10g
 
   graphdb:
-    image: ontotext/graphdb:11.4.3
+    image: ontotext/graphdb:11.5.0
     environment:
       USE_SYSTEM_CA_CERTS: yes
       graphdb__home: /opt/graphdb/home
@@ -91,7 +91,7 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   poolparty:
-    image: ontotext/poolparty:10.3.1
+    image: ontotext/poolparty:10.3.2
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS:
