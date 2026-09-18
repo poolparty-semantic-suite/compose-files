@@ -16,7 +16,7 @@ services:
       - poolparty
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.6.1
+    image: ontotext/poolparty-keycloak:2.7.0
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -31,6 +31,12 @@ services:
       PPGS_KEYCLOAK_LOGIN_CLIENTSECRET: ${POOLPARTY_PPGS_KEYCLOAK_LOGIN_CLIENTSECRET}
       RECOMMENDER_KEYCLOAK_LOGIN_CLIENTSECRET:
       GRAPHDB_PUBLIC_URL:
+      #adf
+      ADF_KEYCLOAK_LOGIN_CLIENTSECRET:
+      #semantic-workbench
+      SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET:
+      #graphviews
+      GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET:
     ports:
       - "9000:9000"
       - "8080:8080"

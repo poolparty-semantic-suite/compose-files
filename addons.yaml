@@ -1,6 +1,6 @@
 services:
   adf:
-    image: ontotext/adf:1.9.0
+    image: ontotext/adf:1.10.0
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -9,7 +9,7 @@ services:
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
       POOLPARTY_URL: "${SERVER_URL}"
-      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_PPT_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      ADF_OAUTH2_CLIENT_SECRET: "${ADF_KEYCLOAK_LOGIN_CLIENTSECRET}"
       MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
@@ -17,7 +17,7 @@ services:
       - adf_data:/var/lib/adf
 
   semantic-workbench:
-    image: ontotext/semantic-workbench:2.5.0
+    image: ontotext/semantic-workbench:2.6.0
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -25,14 +25,11 @@ services:
       # Deprecated: maps to internal URL. Kept for older images and custom overrides.
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
-      # Deprecated: compose workaround for Semantic Workbench < 2.5.0 (pre-existing; kept during transition).
-      spring.security.oauth2.client.provider.keycloak.authorization-uri: ${SERVER_URL}/auth/realms/${POOLPARTY_KEYCLOAK_LOGIN_REALM}/protocol/openid-connect/auth
-      spring.security.oauth2.resourceserver.jwt.issuer-uri: ${SERVER_URL}/auth/realms/${POOLPARTY_KEYCLOAK_LOGIN_REALM}
       POOLPARTY_URL: "${SERVER_URL}"
-      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_PPT_CLIENTSECRET: "${POOLPARTY_PPT_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      WORKBENCH_OAUTH2_CLIENT_SECRET: "${SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET}"
       POOLPARTY_LICENSE_PATH: "/usr/share/semantic-workbench"
       MANAGEMENT_ENDPOINTS_WEB_CORS_ALLOWED_ORIGINS: "${SERVER_URL}"
-      APPLICATION_VERSION: "2.5.0"
+      APPLICATION_VERSION: "2.6.0"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
     volumes:
@@ -40,12 +37,13 @@ services:
       - semantic-workbench_data:/var/lib/semantic-workbench
 
   graphviews:
-    image: ontotext/graphviews:1.0.1
+    image: ontotext/graphviews:1.2.0
     restart: unless-stopped
     environment:
-      PP_USERNAME: superadmin
-      PP_PASSWORD: ${POOLPARTY_SUPER_ADMIN_PASSWORD}
       PP_URL: "${SERVER_URL}"
+      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
+      KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
+      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GRAPHVIEWS_PPT_CLIENT_SECRET: "${GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET}"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
 
