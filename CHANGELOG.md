@@ -14,14 +14,14 @@ Older major version changelogs are archived in [`archive/CHANGELOG_v1.md`](archi
 
 ### Changed
 - **Breaking**: Replaced shared `ppt` Keycloak client usage across addon services with isolated, dedicated Keycloak clients and credentials.
-- **Breaking**: Migrated GraphViews from static Basic Authentication (`PP_USERNAME` / `PP_PASSWORD`) to Keycloak OAuth2 client credentials grant via `SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GRAPHVIEWS_PPT_CLIENT_SECRET`.
+- **Breaking**: Migrated GraphViews from static Basic Authentication (`PP_USERNAME` / `PP_PASSWORD`) to Keycloak OAuth2 client credentials grant via `GRAPHVIEWS_OAUTH2_CLIENT_SECRET`.
 - Updated Semantic Workbench and ADF service-to-service credential propagation to use individual client secrets (`WORKBENCH_OAUTH2_CLIENT_SECRET`, `ADF_OAUTH2_CLIENT_SECRET`).
 
 ### Configuration Changes
 *Group all .properties / yaml changes here so Ops/DevOps can find them instantly.*
 - `ADF_KEYCLOAK_LOGIN_CLIENTSECRET` - **Added**. Client secret for the `adf` Keycloak client, passed to Keycloak and mapped to `ADF_OAUTH2_CLIENT_SECRET` in `addons.yaml`.
 - `SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET` - **Added**. Client secret for the `semantic-workbench` Keycloak client, passed to Keycloak and mapped to `WORKBENCH_OAUTH2_CLIENT_SECRET` in `addons.yaml`.
-- `GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET` - **Added**. Client secret for the `graphviews` Keycloak client, passed to Keycloak and mapped to `SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GRAPHVIEWS_PPT_CLIENT_SECRET` in `addons.yaml`.
+- `GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET` - **Added**. Client secret for the `graphviews` Keycloak client, passed to Keycloak and mapped to `GRAPHVIEWS_OAUTH2_CLIENT_SECRET` in `addons.yaml`.
 - `ADF_MIGRATION_USER_GROUP_PATH` - **Added** (optional). Keycloak group path (e.g. `/ADFUsers`) to automatically receive the `adf/user` client role during 2.7.0 migration.
 - `SEMANTIC_WORKBENCH_MIGRATION_USER_GROUP_PATH` - **Added** (optional). Keycloak group path (e.g. `/SemanticWorkbenchUsers`) to automatically receive the `semantic-workbench/user` client role during 2.7.0 migration.
 - `GRAPHVIEWS_MIGRATION_USER_GROUP_PATH` - **Added** (optional). Keycloak group path (e.g. `/GraphViewsUsers`) to automatically receive the `graphviews/user` client role during 2.7.0 migration.

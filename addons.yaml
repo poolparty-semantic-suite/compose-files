@@ -1,6 +1,7 @@
 services:
   adf:
-    image: ontotext/adf:1.10.0
+    #image: ontotext/adf:1.10.0
+    image: adf:1.10.0-local
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -17,7 +18,8 @@ services:
       - adf_data:/var/lib/adf
 
   semantic-workbench:
-    image: ontotext/semantic-workbench:2.6.0
+    #image: ontotext/semantic-workbench:2.6.0
+    image: semantic-workbench:2.6.0-local
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -37,58 +39,59 @@ services:
       - semantic-workbench_data:/var/lib/semantic-workbench
 
   graphviews:
-    image: ontotext/graphviews:1.2.0
+    #image: ontotext/graphviews:1.2.0
+    image: graphviews:1.2.0-local
     restart: unless-stopped
     environment:
       PP_URL: "${SERVER_URL}"
       KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
-      SPRING_SECURITY_OAUTH2_CLIENT_REGISTRATION_GRAPHVIEWS_PPT_CLIENT_SECRET: "${GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      GRAPHVIEWS_OAUTH2_CLIENT_SECRET: "${GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET}"
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
 
-  mirror-app:
-    image: ontotext/mirror-app:2.5.0
-    restart: unless-stopped
-    ports:
-      - "8008:8008"
-    extra_hosts:
-      - "${SERVER_NAME}:host-gateway"
-    #environment:
-    #  MIRROR_CONFIG: /app/server-map.json
-    #volumes:
-    #  - ./files/Server-map.json:/app/Server-map.json
-
-  rdf4j:
-    image: eclipse/rdf4j-workbench:4.3.15
-    restart: unless-stopped
-    ports:
-      - 8086:8080
-    extra_hosts:
-      - "${SERVER_NAME}:host-gateway"
-    environment:
-      APP_LOGGING_LEVEL: INFO
-      APP_SERVER: tomcat
-    volumes:
-      - rdf4j_data:/var/rdf4j
-      - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
-
-  unified-views:
-    image: ontotext/unifiedviews:10.2.3
-    restart: unless-stopped
-    depends_on:
-      - rdf4j
-    ports:
-      - 8085:8080
-    extra_hosts:
-      - "${SERVER_NAME}:host-gateway"
-    environment:
-      LICENSE_DIR: /unified-views/license/
-    #  PROPERTIES_FILE: /unified-views/configs/uv.properties
-    volumes:
-      - uv_data:/unified-views
-      - "${UNIFIEDVIEWS_LICENSE}:/unified-views/license/uv-license.key:ro"
-    # - ./my-custom-uv.properties:/unified-views/configs/uv.properties
+#  mirror-app:
+#    image: ontotext/mirror-app:2.5.0
+#    restart: unless-stopped
+#    ports:
+#      - "8008:8008"
+#    extra_hosts:
+#      - "${SERVER_NAME}:host-gateway"
+#    #environment:
+#    #  MIRROR_CONFIG: /app/server-map.json
+#    #volumes:
+#    #  - ./files/Server-map.json:/app/Server-map.json
+#
+#  rdf4j:
+#    image: eclipse/rdf4j-workbench:4.3.15
+#    restart: unless-stopped
+#    ports:
+#      - 8086:8080
+#    extra_hosts:
+#      - "${SERVER_NAME}:host-gateway"
+#    environment:
+#      APP_LOGGING_LEVEL: INFO
+#      APP_SERVER: tomcat
+#    volumes:
+#      - rdf4j_data:/var/rdf4j
+#      - rdf4j_logs:/usr/local/${APP_SERVER:-tomcat}/logs
+#
+#  unified-views:
+#    image: ontotext/unifiedviews:10.2.3
+#    restart: unless-stopped
+#    depends_on:
+#      - rdf4j
+#    ports:
+#      - 8085:8080
+#    extra_hosts:
+#      - "${SERVER_NAME}:host-gateway"
+#    environment:
+#      LICENSE_DIR: /unified-views/license/
+#    #  PROPERTIES_FILE: /unified-views/configs/uv.properties
+#    volumes:
+#      - uv_data:/unified-views
+#      - "${UNIFIEDVIEWS_LICENSE}:/unified-views/license/uv-license.key:ro"
+#    # - ./my-custom-uv.properties:/unified-views/configs/uv.properties
 
 volumes:
   adf_data:

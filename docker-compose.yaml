@@ -16,7 +16,8 @@ services:
       - poolparty
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.7.0
+    #image: ontotext/poolparty-keycloak:2.7.0
+    image: poolparty-keycloak:2.7.0-local
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
