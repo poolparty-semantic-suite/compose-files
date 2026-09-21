@@ -46,8 +46,8 @@ services:
         ]
       interval: 10s
       timeout: 10s
-      retries: 30
-      start_period: 180s
+      retries: 60
+      start_period: 240s
     command:
       - start-dev
       - --import-realm
@@ -86,7 +86,7 @@ services:
       test: [ "CMD", "curl", "--fail", "http://localhost:7200/protocol" ]
       interval: 10s
       timeout: 5s
-      retries: 20
+      retries: 60
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
 
