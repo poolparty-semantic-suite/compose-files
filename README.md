@@ -148,7 +148,7 @@ docker compose -f docker-compose.yaml -f spark.yaml up -d
 
 Graph Automation provides workflow automation based on n8n. The [graph-automation.yaml](./graph-automation.yaml)
 compose file adds the Graph Automation UI/API, two external task runners, a dedicated PostgreSQL database, and
-nginx routing for the `/n8n/` context path.
+nginx routing for the `/automation/` context path.
 
 To deploy Graph Automation alongside the default stack, run:
 
@@ -164,10 +164,10 @@ Before starting, review the N8N-related variables in [.env_template](./.env_temp
 * `POSTGRES_DB` / `POSTGRES_USER` / `POSTGRES_PASSWORD`: credentials for the Graph Automation PostgreSQL database.
 * `N8N_RUNNERS_TASK_REQUEST_TIMEOUT` / `N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT` / `N8N_RUNNERS_TASK_TIMEOUT`: different runner related timeouts. Depending on workflows and their usage of codenodes this timeouts can cause hard failure in long running tasks unless properly configured.
 
-The proxy automatically mounts [files/nginx/addons/n8n.conf](./files/nginx/addons/n8n.conf), so no manual copy into
+The proxy automatically mounts [files/nginx/addons/graph-automation.conf](./files/nginx/addons/graph-automation.conf), so no manual copy into
 `extra_includes` is required.
 
-After the services are up, Graph Automation is available at `http(s)://<server-name>/n8n/`.
+After the services are up, Graph Automation is available at `http(s)://<server-name>/automation/`.
 
 The custom graphwise task runners build on the default n8n task runners. They include additional support of the following libraries:
 - JavaScript: moment
