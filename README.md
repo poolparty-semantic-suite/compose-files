@@ -68,7 +68,7 @@ first login you'll be asked to change this password.
 * `POOLPARTY_KEYCLOAK_AUTHURL`: backward-compatible alias for the internal URL, used by PoolParty.
 * `KEYCLOAK_URL` (in `addons.yaml`, deprecated): alias of the internal URL for older ADF/Semantic Workbench images. Prefer `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL` and `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`.
 * `spring.security.oauth2.client.provider.keycloak.authorization-uri` and `spring.security.oauth2.resourceserver.jwt.issuer-uri` (in `addons.yaml` for Semantic Workbench, deprecated): pre-existing compose workaround for Semantic Workbench versions before 2.5.0. Redundant on 2.5.0+ but kept for backward compatibility during transition.
-* `SERVER_NAME`: hostname used to access PoolParty from the browser (default `poolparty.127.0.0.1.nip.io`).
+* `SERVER_NAME`: hostname used to access PoolParty from the browser (default `poolparty.127.0.0.1.nip.io`). The PoolParty container maps this name to the host, so calls it makes to that address reach nginx instead of its own loopback.
 
 Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
 
