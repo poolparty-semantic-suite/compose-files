@@ -1,7 +1,7 @@
 services:
   proxy:
     volumes:
-      - ./files/nginx/addons/n8n.conf:/etc/nginx/includes/n8n.conf:ro
+      - ./files/nginx/addons/graph-automation.conf:/etc/nginx/includes/graph-automation.conf:ro
 
   n8n:
     #Based on n8nio/n8n:2.22.4
