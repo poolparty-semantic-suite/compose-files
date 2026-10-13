@@ -1,0 +1,159 @@
+services:
+  proxy:
+    volumes:
+      - ./files/nginx/addons/graph-automation.conf:/etc/nginx/includes/graph-automation.conf:ro
+
+  n8n:
+    #Based on n8nio/n8n:2.38.7
+    image: maven.ontotext.com/graphwise-workflows:1.0.0-RC1
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    environment:
+      N8N_PROTOCOL:
+      N8N_PORT:
+      N8N_ENFORCE_SETTINGS_FILE_PERMISSIONS:
+      N8N_DIAGNOSTICS_ENABLED:
+      DB_TYPE:
+      DB_POSTGRESDB_HOST:
+      DB_POSTGRESDB_PORT:
+      DB_POSTGRESDB_DATABASE:
+      DB_POSTGRESDB_USER:
+      DB_POSTGRESDB_PASSWORD:
+      N8N_METRICS:
+      N8N_LICENSE_TENANT_ID:
+      N8N_LICENSE_ACTIVATION_KEY:
+      N8N_ENCRYPTION_KEY:
+      N8N_PATH:
+      N8N_DEFAULT_BINARY_DATA_MODE:
+      WEBHOOK_URL:
+      VUE_APP_PUBLIC_PATH:
+      N8N_SECURE_COOKIE:
+      NODE_FUNCTION_ALLOW_BUILTIN:
+      NODE_FUNCTION_ALLOW_EXTERNAL:
+      N8N_TRUST_PROXY:
+      N8N_PROXY_HOPS:
+      N8N_RUNNERS_MODE:
+      N8N_RUNNERS_AUTH_TOKEN:
+      N8N_NATIVE_PYTHON_RUNNER:
+      N8N_RUNNERS_BROKER_ENABLED:
+      N8N_RUNNERS_BROKER_PORT:
+      N8N_RUNNERS_BROKER_LISTEN_ADDRESS:
+      N8N_RUNNERS_TASK_REQUEST_TIMEOUT:
+      N8N_RML_HOST_DATA_DIR: /home/node/.n8n-files/rml-data
+      N8N_RML_WORKER_DATA_DIR: /data/rml-data
+    ports:
+      - "5678:${N8N_PORT}"
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - n8n_shared_data:/home/node/.n8n-files
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
+
+  n8n-runner-1: &n8n-runner
+    #Based on n8nio/runners:2.38.7
+    image: maven.ontotext.com/graphwise-runners:1.0.0-RC1
+    restart: unless-stopped
+    depends_on:
+      - n8n
+    environment:
+      N8N_RUNNERS_AUTH_TOKEN:
+      N8N_RUNNERS_TASK_BROKER_URI:
+      N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT:
+      N8N_RUNNERS_TASK_TIMEOUT:
+      N8N_RUNNERS_MAX_CONCURRENCY:
+    volumes:
+      - n8n_data:/home/node/.n8n
+      - n8n_shared_data:/home/node/.n8n-files
+
+  n8n-runner-2:
+    <<: *n8n-runner
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${N8N_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${N8N_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${N8N_POSTGRES_DB}
+    volumes:
+      - n8n_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # Optional RML stack (Kafka + MorphKGC worker). Enabled with:
+  #   docker compose ... --profile rml up -d
+  morphkgc-kafka:
+    profiles: [rml]
+    image: apache/kafka:4.3.1
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://morphkgc-kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@morphkgc-kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+      # topics are pre-created by the kafka-init service below
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      # partition count is the ceiling on how many worker replicas can be
+      # simultaneously active (a partition is owned by exactly one consumer
+      # in the group at a time) - overprovision here since partitions can be
+      # added later but never removed from an existing topic.
+      KAFKA_NUM_PARTITIONS: 8
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+  # one-shot: waits for the broker, creates the topics with explicit configs,
+  # then exits. `--if-not-exists` makes repeated `up` runs idempotent.
+  morphkgc-kafka-init:
+    profiles: [rml]
+    image: apache/kafka:4.3.1
+    depends_on:
+      - morphkgc-kafka
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=morphkgc-kafka:9092
+      - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
+      - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
+    command: |
+      "
+      echo 'waiting for kafka to be reachable...'
+      until /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --list >/dev/null 2>&1; do
+        sleep 2
+      done
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --create --if-not-exists --topic $$KAFKA_JOBS_TOPIC --partitions 8 --replication-factor 1
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --create --if-not-exists --topic $$KAFKA_RESULTS_TOPIC --partitions 8 --replication-factor 1
+      echo 'topics ready:'
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --list
+      "
+
+  morphkgc-worker:
+    profiles: [rml]
+    image: maven.ontotext.com/graph-automation/morphkgc-kafka-worker:0.2.0
+    depends_on:
+      morphkgc-kafka-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    user: "1000:1000"
+    environment:
+      - LOCAL_OUTPUT_ROOT=/data/rml-data
+      - KAFKA_BOOTSTRAP_SERVERS=morphkgc-kafka:9092
+      - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
+      - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
+      - LOG_LEVEL=INFO
+    volumes:
+      - n8n_shared_data:/data
+
+volumes:
+  n8n_postgres_data:
+  n8n_data:
+  n8n_shared_data:
+  kafka_data:
