@@ -156,6 +156,20 @@ To deploy Graph Automation alongside the default stack, run:
 docker compose -f docker-compose.yaml -f graph-automation.yaml up -d
 ```
 
+### RML transformation (optional)
+
+Kafka, topic init, and the MorphKGC worker are only needed when using the RML custom node.
+They are gated behind the Compose `rml` profile and are **not** started with a normal `up`.
+To include them:
+
+```shell
+docker compose -f docker-compose.yaml -f graph-automation.yaml --profile rml up -d
+```
+
+You can also set `COMPOSE_PROFILES=rml` in `.env` so every subsequent compose command includes them.
+
+Scale MorphKGC workers with `--scale worker=N` when the profile is active.
+
 Before starting, review the N8N-related variables in [.env_template](./.env_template). Notable settings:
 
 * `N8N_LICENSE_ACTIVATION_KEY` / `N8N_LICENSE_TENANT_ID`: license credentials for Graph Automation.

@@ -4,8 +4,8 @@ services:
       - ./files/nginx/addons/graph-automation.conf:/etc/nginx/includes/graph-automation.conf:ro
 
   n8n:
-    #Based on n8nio/n8n:2.22.4
-    image: maven.ontotext.com/graphwise-workflows:1.0.0-M1
+    #Based on n8nio/n8n:2.38.7
+    image: maven.ontotext.com/graphwise-workflows:1.0.0-RC1
     depends_on:
       - postgres
     restart: unless-stopped
@@ -40,15 +40,19 @@ services:
       N8N_RUNNERS_BROKER_PORT:
       N8N_RUNNERS_BROKER_LISTEN_ADDRESS:
       N8N_RUNNERS_TASK_REQUEST_TIMEOUT:
+      N8N_RML_HOST_DATA_DIR: /home/node/.n8n-files/rml-data
+      N8N_RML_WORKER_DATA_DIR: /data/rml-data
     ports:
       - "5678:${N8N_PORT}"
     volumes:
       - n8n_data:/home/node/.n8n
       - n8n_shared_data:/home/node/.n8n-files
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
 
   n8n-runner-1: &n8n-runner
-    #Based on n8nio/runners:2.22.4
-    image: maven.ontotext.com/graphwise-runners:1.0.0-M1
+    #Based on n8nio/runners:2.38.7
+    image: maven.ontotext.com/graphwise-runners:1.0.0-RC1
     restart: unless-stopped
     depends_on:
       - n8n
@@ -69,9 +73,9 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER:
-      POSTGRES_PASSWORD:
-      POSTGRES_DB:
+      N8N_POSTGRES_USER:
+      N8N_POSTGRES_PASSWORD:
+      N8N_POSTGRES_DB:
     volumes:
       - n8n_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -80,7 +84,79 @@ services:
       timeout: 5s
       retries: 10
 
+  # Optional RML stack (Kafka + MorphKGC worker). Enabled with:
+  #   docker compose ... --profile rml up -d
+  kafka:
+    profiles: [rml]
+    image: apache/kafka:4.3.1
+    container_name: morphkgc-kafka
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      # topics are pre-created by the kafka-init service below
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      # partition count is the ceiling on how many worker replicas can be
+      # simultaneously active (a partition is owned by exactly one consumer
+      # in the group at a time) - overprovision here since partitions can be
+      # added later but never removed from an existing topic.
+      KAFKA_NUM_PARTITIONS: 8
+    volumes:
+      - kafka_data:/var/lib/kafka/data
+  # one-shot: waits for the broker, creates the topics with explicit configs,
+  # then exits. `--if-not-exists` makes repeated `up` runs idempotent.
+  kafka-init:
+    profiles: [rml]
+    image: apache/kafka:4.3.1
+    container_name: morphkgc-kafka-init
+    depends_on:
+      - kafka
+    restart: "no"
+    entrypoint: ["/bin/sh", "-c"]
+    environment:
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
+      - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
+    command: |
+      "
+      echo 'waiting for kafka to be reachable...'
+      until /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --list >/dev/null 2>&1; do
+        sleep 2
+      done
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --create --if-not-exists --topic $$KAFKA_JOBS_TOPIC --partitions 8 --replication-factor 1
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --create --if-not-exists --topic $$KAFKA_RESULTS_TOPIC --partitions 8 --replication-factor 1
+      echo 'topics ready:'
+      /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --list
+      "
+
+  worker:
+    profiles: [rml]
+    image: maven.ontotext.com/graph-automation/morphkgc-kafka-worker:0.2.0
+    # no container_name / fixed name here: `docker compose up --scale
+    # worker=N` needs to mint its own per-replica container names.
+    depends_on:
+      kafka-init:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    user: "1000:1000"
+    environment:
+      - LOCAL_OUTPUT_ROOT=/data/rml-data
+      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
+      - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
+      - LOG_LEVEL=INFO
+    volumes:
+      - n8n_shared_data:/data
+
 volumes:
   n8n_postgres_data:
   n8n_data:
   n8n_shared_data:
+  kafka_data:
