@@ -86,19 +86,19 @@ services:
 
   # Optional RML stack (Kafka + MorphKGC worker). Enabled with:
   #   docker compose ... --profile rml up -d
-  kafka:
+  morphkgc-kafka:
     profiles: [rml]
     image: apache/kafka:4.3.1
-    container_name: morphkgc-kafka
     environment:
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: broker,controller
       KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://morphkgc-kafka:9092
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
-      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@kafka:9093
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@morphkgc-kafka:9093
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
       # topics are pre-created by the kafka-init service below
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
       # partition count is the ceiling on how many worker replicas can be
@@ -110,16 +110,15 @@ services:
       - kafka_data:/var/lib/kafka/data
   # one-shot: waits for the broker, creates the topics with explicit configs,
   # then exits. `--if-not-exists` makes repeated `up` runs idempotent.
-  kafka-init:
+  morphkgc-kafka-init:
     profiles: [rml]
     image: apache/kafka:4.3.1
-    container_name: morphkgc-kafka-init
     depends_on:
-      - kafka
+      - morphkgc-kafka
     restart: "no"
     entrypoint: ["/bin/sh", "-c"]
     environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_BOOTSTRAP_SERVERS=morphkgc-kafka:9092
       - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
       - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
     command: |
@@ -134,13 +133,11 @@ services:
       /opt/kafka/bin/kafka-topics.sh --bootstrap-server $$KAFKA_BOOTSTRAP_SERVERS --list
       "
 
-  worker:
+  morphkgc-worker:
     profiles: [rml]
     image: maven.ontotext.com/graph-automation/morphkgc-kafka-worker:0.2.0
-    # no container_name / fixed name here: `docker compose up --scale
-    # worker=N` needs to mint its own per-replica container names.
     depends_on:
-      kafka-init:
+      morphkgc-kafka-init:
         condition: service_completed_successfully
     restart: unless-stopped
     extra_hosts:
@@ -148,7 +145,7 @@ services:
     user: "1000:1000"
     environment:
       - LOCAL_OUTPUT_ROOT=/data/rml-data
-      - KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+      - KAFKA_BOOTSTRAP_SERVERS=morphkgc-kafka:9092
       - KAFKA_JOBS_TOPIC=${KAFKA_JOBS_TOPIC:-morphkgc.jobs}
       - KAFKA_RESULTS_TOPIC=${KAFKA_RESULTS_TOPIC:-morphkgc.results}
       - LOG_LEVEL=INFO
