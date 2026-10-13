@@ -73,9 +73,9 @@ services:
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      N8N_POSTGRES_USER:
-      N8N_POSTGRES_PASSWORD:
-      N8N_POSTGRES_DB:
+      POSTGRES_USER: ${N8N_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${N8N_POSTGRES_PASSWORD}
+      POSTGRES_DB: ${N8N_POSTGRES_DB}
     volumes:
       - n8n_postgres_data:/var/lib/postgresql/data
     healthcheck:
