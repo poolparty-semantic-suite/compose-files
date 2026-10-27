@@ -1,45 +1,81 @@
+
 {
   "service": {
-    "comments": [
-      "Settings for the mirroring service itself.",
-      "control: where to authenticate PoolParty session and retrieve project uuid. @source is the source server.",
-      "name: optional; will be shown by the UI in the starting page",
-      "token: optional; alternative to session-based authentication",
-      "authorized_users: optional; if absent, any user can trigger synchronization",
-      "origins: optional list of CORS origins; omit if the UI is hosted on the source server",
-      "EXAMPLES:",
-      {
-        "name": "Taxonomy Publishing Service",
-        "token": "XXXXXXXXXXXXXXXXXXX",
-        "authorized_users": [
-          "sync_user",
-          "another_user"
-        ],
-        "origins": [
-          "https://mirroring-host.poolparty.biz"
-        ]
-      }
-    ],
-    "control": "@source"
+    "name": "Mirror Service Example",
+    "control": "@servers[local]",
+    "token": "YOUR_SERVICE_TOKEN"
   },
-  "source": {
-    "host": "http://poolparty.127.0.0.1.nip.io",
-    "name": "Authoring",
-    "user": "apiuser",
-    "password": "poolparty",
-    "export_parameters": {
-      "modules": [ "concepts", "blacklistedTerms" ]
+  "servers": {
+    "local": {
+      "host": "https://source.example.com",
+      "user": "SOURCE_API_USER",
+      "password": "SOURCE_API_PASSWORD"
     },
-    "comment": "Role: API User; Groups: Mirror"
+    "target": {
+      "host": "https://target.example.com",
+      "user": "TARGET_API_ADMIN",
+      "password": "TARGET_API_PASSWORD"
+    }
   },
-
-  "targets": [
+  "routes": [
     {
-      "host": "https://my-prod.com",
-      "name": "Production",
-      "user": "apiadmin",
-      "password": "poolparty",
-      "comment": "Role: API Admin; Groups: Public"
+      "filter": "%",
+      "source": {
+        "server": "@servers[local]",
+        "export_parameters": {
+          "modules": [
+            "concepts",
+            "blacklistedTerms"
+          ]
+        }
+      },
+      "targets": [
+        {
+          "server": "@servers[target]"
+        }
+      ]
+    }
+  ],
+  "checkhooks": [
+    {
+      "method": "GET",
+      "url": "http://hook-receiver:9001/check/200",
+      "auth": {
+        "user": "HOOK_USERNAME",
+        "password": "HOOK_PASSWORD"
+      }
+    }
+  ],
+  "webhooks": [
+    {
+      "type": "notification",
+      "onSuccess": true,
+      "onFailure": false,
+      "url": "http://hook-receiver:9001/notify/200",
+      "auth": {
+        "user": "HOOK_USERNAME",
+        "password": "HOOK_PASSWORD"
+      }
+    },
+    {
+      "type": "notification",
+      "onSuccess": true,
+      "onFailure": false,
+      "url": "http://hook-receiver:9001/notify/200",
+      "auth": {
+        "protocol": "oauth2",
+        "token_url": "http://hook-receiver:9001/token",
+        "grant_type": "client_credentials",
+        "scope": ".default",
+        "client_id": "OAUTH_CLIENT_ID",
+        "client_secret": "OAUTH_CLIENT_SECRET"
+      }
+    },
+    {
+      "type": "notification",
+      "onSuccess": true,
+      "onFailure": false,
+      "url": "http://hook-receiver:9001/notify/200"
     }
   ]
 }
