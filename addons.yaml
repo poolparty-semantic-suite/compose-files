@@ -57,7 +57,7 @@ services:
     extra_hosts:
       - "${SERVER_NAME}:host-gateway"
     #environment:
-    #  MIRROR_CONFIG: /app/server-map.json
+    #  MIRROR_CONFIG: /app/Server-map.json
     #volumes:
     #  - ./files/Server-map.json:/app/Server-map.json
 
