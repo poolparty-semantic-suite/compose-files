@@ -16,7 +16,7 @@ services:
       - poolparty
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.6.2
+    image: maven.ontotext.com/gwp/poolparty-keycloak:2.7.0-RC1-amd64
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -31,6 +31,13 @@ services:
       PPGS_KEYCLOAK_LOGIN_CLIENTSECRET: ${POOLPARTY_PPGS_KEYCLOAK_LOGIN_CLIENTSECRET}
       RECOMMENDER_KEYCLOAK_LOGIN_CLIENTSECRET:
       GRAPHDB_PUBLIC_URL:
+      #adf
+      ADF_KEYCLOAK_LOGIN_CLIENTSECRET:
+      #semantic-workbench
+      SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET:
+      #graphviews
+      GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET:
+      SUPERADMIN_REQUIRES_ACTIONS: false
     ports:
       - "9000:9000"
       - "8080:8080"
@@ -91,7 +98,7 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   poolparty:
-    image: ontotext/poolparty:10.3.3
+    image: maven.ontotext.com/gwp/poolparty:latest
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS:
