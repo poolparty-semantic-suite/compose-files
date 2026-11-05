@@ -5,8 +5,6 @@ services:
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
       KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
-      # Deprecated: maps to internal URL. Kept for older images and custom overrides.
-      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
       POOLPARTY_URL: "${SERVER_URL}"
       ADF_OAUTH2_CLIENT_SECRET: "${ADF_KEYCLOAK_LOGIN_CLIENTSECRET}"
@@ -23,8 +21,6 @@ services:
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
       KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
-      # Deprecated: maps to internal URL. Kept for older images and custom overrides.
-      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
       KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
       POOLPARTY_URL: "${SERVER_URL}"
       WORKBENCH_OAUTH2_CLIENT_SECRET: "${SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET}"
@@ -37,20 +33,18 @@ services:
       - "${POOLPARTY_LICENSE}:/usr/share/semantic-workbench/poolparty.key"
       - semantic-workbench_data:/var/lib/semantic-workbench
 
-#  graphviews:
-#    image: maven.ontotext.com/gwp/graphviews:1.2.0-RC1-amd64
-#    restart: unless-stopped
-#    environment:
-#      PP_URL: "${SERVER_URL}"
-#      KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
-#      KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
-#      # Deprecated: maps to internal URL. Kept for older images and custom overrides.
-  #      KEYCLOAK_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
-#      KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
-#      GRAPHVIEWS_OAUTH2_CLIENT_SECRET: "${GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET}"
-#      GRAPHVIEWS_SECURITY_FILTER_DISABLED: "false"
-#    extra_hosts:
-#      - "${SERVER_NAME}:host-gateway"
+  graphviews:
+    image: maven.ontotext.com/gwp/graphviews:1.2.0-RC2-amd64
+    restart: unless-stopped
+    environment:
+      PP_URL: "${SERVER_URL}"
+      KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
+      KEYCLOAK_INTERNAL_URL: "${POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL}"
+      KEYCLOAK_REALM: "${POOLPARTY_KEYCLOAK_LOGIN_REALM}"
+      GRAPHVIEWS_OAUTH2_CLIENT_SECRET: "${GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET}"
+      GRAPHVIEWS_SECURITY_FILTER_DISABLED: "false"
+    extra_hosts:
+      - "${SERVER_NAME}:host-gateway"
 
   mirror-app:
     image: ontotext/mirror-app:2.7.0
