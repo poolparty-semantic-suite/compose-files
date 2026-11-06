@@ -64,12 +64,12 @@ recommended to be changed in production environments.
 * `POOLPARTY_SUPER_ADMIN_PASSWORD`: this is the password for the `superadmin` in PoolParty, default `poolparty`. After the
 first login you'll be asked to change this password.
 * `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`: internal Docker URL for server-to-server Keycloak calls (default `http://keycloak:8080/auth`). Used by PoolParty and addon services for token/JWKS/introspection.
-* `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL`: public browser-facing Keycloak URL (default `${SERVER_URL}/auth`). Used by ADF and Semantic Workbench for OAuth redirects.
+* `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL`: public browser-facing Keycloak URL (default `${SERVER_URL}/auth`). Used by addon services (ADF, Semantic Workbench, GraphViews) for OAuth redirects.
 * `POOLPARTY_KEYCLOAK_AUTHURL`: backward-compatible alias for the internal URL, used by PoolParty.
 * `ADF_KEYCLOAK_LOGIN_CLIENTSECRET`: client secret for the dedicated `adf` client in Keycloak.
 * `SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET`: client secret for the dedicated `semantic-workbench` client in Keycloak.
-* `GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET`: client secret for the dedicated `graphviews` client in Keycloak (used for S2S PoolParty communication).
-* `KEYCLOAK_URL` (in `addons.yaml`, deprecated): alias of the internal URL for older ADF/Semantic Workbench images. Prefer `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL` and `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`.
+* `GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET`: client secret for the dedicated `graphviews` client in Keycloak (used for S2S PoolParty communication, browser login, and token authentication).
+* `KEYCLOAK_URL` (in `addons.yaml`, deprecated): alias of the internal URL for older addon images and backward compatibility. Prefer `POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL` and `POOLPARTY_KEYCLOAK_INTERNAL_AUTHURL`.
 * `SERVER_NAME`: hostname used to access PoolParty from the browser (default `poolparty.127.0.0.1.nip.io`).  The PoolParty container maps this name to the host, so calls it makes to that address reach nginx instead of its own loopback.
 
 Review the comments in the [.env_template](./.env_template) for all available variable and their purpose.
@@ -169,8 +169,15 @@ To deploy the services that complement PoolParty, you can use the `addons.yaml` 
 > [!NOTE]
 > Your PoolParty license must have the Semantic Workbench capability in order to use this service.
 
-Before starting the services, copy the nginx configuration files from `files/nginx/addons` to 
-`files/nginx/includes/extra_includes`. These will expose the service through nginx on their respective context paths.
+### Addon Authentication & Configuration Requirements
+
+1. **Client Secrets**: Ensure that the following secrets are configured in `.env` before starting:
+   - `ADF_KEYCLOAK_LOGIN_CLIENTSECRET`
+   - `SEMANTIC_WORKBENCH_KEYCLOAK_LOGIN_CLIENTSECRET`
+   - `GRAPHVIEWS_KEYCLOAK_LOGIN_CLIENTSECRET`
+2. **User Authorization**: Access to ADF, Semantic Workbench, and GraphViews requires the `user` client role for the respective client. Starting with Keycloak 2.7.0, default fallback groups (`/ADF_Users`, `/SemanticWorkbench_Users`, `/GraphViews_Users`) are provisioned with these roles and the `superadmin` user is assigned automatically. Custom user groups or users can be assigned during migration via `*_MIGRATION_USER_GROUP_PATH` and `*_MIGRATION_USERS` variables in `.env`.
+3. **Proxy Setup**: Before starting the services, copy the nginx configuration files from `files/nginx/addons` to `files/nginx/includes/extra_includes`. These expose the services through nginx on their respective context paths.
+4. **Inbound Basic Authentication (Optional)**: Inbound HTTP Basic Authentication is disabled by default across all addon services. For legacy machine-to-machine integrations requiring Basic Auth via Keycloak Direct Access Grants, it can be enabled on individual services via environment variables: `ADF_SECURITY_BASIC_AUTH_ENABLED=true` (ADF), `WORKBENCH_SECURITY_BASIC_AUTH_ENABLED=true` (Semantic Workbench), or `GRAPHVIEWS_BASIC_AUTH_ENABLED=true` (GraphViews).
 
 Now you can start all services:
 ```shell
@@ -243,7 +250,7 @@ You can use `docker compose logs -f [SERVICE]`, to follow the log as it's update
 
 ## Keycloak Automated Migrations & Troubleshooting
 
-Starting with Keycloak image `2.6.0`, schema and realm upgrades are executed automatically on container startup via an internal migration orchestrator.
+Starting with Keycloak image `2.6.0`, schema and realm upgrades are executed automatically on container startup via an internal migration orchestrator. Keycloak `2.7.0` automatically provisions dedicated addon clients (`adf`, `semantic-workbench`, `graphviews`), audience scopes, and default user groups.
 
 ### Hardware Dependency & Timeout Considerations
 - **Execution Duration**: The migration runtime depends significantly on available hardware resources (CPU, I/O performance, and database latency).
