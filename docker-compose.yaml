@@ -1,6 +1,6 @@
 services:
   proxy:
-    image: nginx:1.29.0
+    image: nginx:1.30.6
     restart: unless-stopped
     environment:
       SERVER_NAME:
