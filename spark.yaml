@@ -4,12 +4,16 @@ services:
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     environment:
       SPARK_NO_DAEMONIZE: "true"
+      # Mitigate Java4Shell (CVE-2026-114938) until apache/spark ships a fixed JDK (21.0.13.1+).
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
 
   spark-worker:
     image: apache/spark:4.1.2
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark:7077 --memory 1G --cores 1
     environment:
       SPARK_NO_DAEMONIZE: "true"
+      # Mitigate Java4Shell (CVE-2026-114938) until apache/spark ships a fixed JDK (21.0.13.1+).
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
     depends_on:
       - spark
 
