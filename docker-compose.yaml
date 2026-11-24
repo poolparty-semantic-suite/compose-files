@@ -16,7 +16,7 @@ services:
       - poolparty
 
   keycloak:
-    image: ontotext/poolparty-keycloak:2.6.3-RC2
+    image: ontotext/poolparty-keycloak:2.6.3
     environment:
       KC_PROXY_HEADERS:
       KC_HTTP_ENABLED:
@@ -91,7 +91,7 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   poolparty:
-    image: ontotext/poolparty:10.3.4-RC1
+    image: ontotext/poolparty:10.3.4
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS:
