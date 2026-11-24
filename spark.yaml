@@ -4,12 +4,19 @@ services:
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master
     environment:
       SPARK_NO_DAEMONIZE: "true"
+      # Java4Shell (CVE-2026-114938): disables the vulnerable HotSpot Base64 AVX-512 intrinsic
+      # until apache/spark ships a fixed JDK (21.0.13.1+). See OpenJDK/Red Hat guidance:
+      # https://openjdk.org/groups/vulnerability/advisories/2026-11-17
+      # https://access.redhat.com/security/vulnerabilities/RHSB-2026-018
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
 
   spark-worker:
     image: apache/spark:4.1.2
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark:7077 --memory 1G --cores 1
     environment:
       SPARK_NO_DAEMONIZE: "true"
+      # Same Java4Shell mitigation as spark (see comment above).
+      JAVA_TOOL_OPTIONS: "-XX:-UseBASE64Intrinsics"
     depends_on:
       - spark
 
