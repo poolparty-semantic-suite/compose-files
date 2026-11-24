@@ -1,6 +1,6 @@
 services:
   adf:
-    image: ontotext/adf:1.9.1-RC1
+    image: ontotext/adf:1.9.1
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -17,7 +17,7 @@ services:
       - adf_data:/var/lib/adf
 
   semantic-workbench:
-    image: ontotext/semantic-workbench:2.5.1-RC2
+    image: ontotext/semantic-workbench:2.5.1
     restart: unless-stopped
     environment:
       KEYCLOAK_PUBLIC_URL: "${POOLPARTY_KEYCLOAK_PUBLIC_AUTHURL}"
@@ -40,7 +40,7 @@ services:
       - semantic-workbench_data:/var/lib/semantic-workbench
 
   graphviews:
-    image: ontotext/graphviews:1.0.2-RC2
+    image: ontotext/graphviews:1.0.2
     restart: unless-stopped
     environment:
       PP_USERNAME: superadmin
