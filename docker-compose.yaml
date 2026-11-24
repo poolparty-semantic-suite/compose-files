@@ -91,7 +91,7 @@ services:
       - "${SERVER_NAME}:host-gateway"
 
   poolparty:
-    image: ontotext/poolparty:10.3.3
+    image: ontotext/poolparty:10.3.4-RC1
     environment:
       USE_SYSTEM_CA_CERTS: yes
       POOLPARTY_CORS_ALLOWEDORIGINS:
