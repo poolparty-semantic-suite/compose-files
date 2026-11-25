@@ -1,6 +1,6 @@
 services:
   proxy:
-    image: nginx:1.30.7
+    image: nginx:1.30.8-alpine
     restart: unless-stopped
     environment:
       SERVER_NAME:
