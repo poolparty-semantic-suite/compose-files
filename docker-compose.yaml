@@ -9,6 +9,7 @@ services:
       PROXY_READ_TIMEOUT:
     volumes:
       - ./files/nginx/includes:/etc/nginx/includes
+      - ./files/nginx/html:/var/www/portal
       - "${PROXY_CONFIG_PATH}:/etc/nginx/templates/proxy.conf.template"
     ports:
       - "80:80"

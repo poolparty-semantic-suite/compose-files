@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Graphwise Portal</title>
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-soft: #f4f6fb;
+      --border: #dde3ee;
+      --navy: #052744;
+      --text: #3b5c7f;
+      --blue: #001fff;
+      --notice-bg: #fff8e1;
+      --notice-border: #f2c94c;
+      --notice-text: #5c4500;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      border-bottom: 1px solid var(--border);
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    header .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    .brand {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--navy);
+      text-decoration: none;
+    }
+
+    .brand span {
+      color: var(--blue);
+    }
+
+    main {
+      flex: 1;
+      padding-top: 2.5rem;
+      padding-bottom: 3rem;
+    }
+
+    .notice {
+      background: var(--notice-bg);
+      border: 1px solid var(--notice-border);
+      color: var(--notice-text);
+      border-radius: 6px;
+      padding: 0.6rem 1rem;
+      font-size: 0.875rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .eyebrow {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--blue);
+      margin-bottom: 0.5rem;
+    }
+
+    h1 {
+      font-size: 2.25rem;
+      line-height: 1.2;
+      color: var(--navy);
+      margin-bottom: 0.75rem;
+    }
+
+    .intro {
+      max-width: 40rem;
+      font-size: 1.0625rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.25rem;
+    }
+
+    .card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.5rem;
+      background: var(--bg-soft);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .card:hover,
+    .card:focus-visible {
+      border-color: var(--blue);
+      background: var(--bg);
+    }
+
+    .card h2 {
+      font-size: 1.125rem;
+      color: var(--navy);
+      margin-bottom: 0.4rem;
+    }
+
+    .card p {
+      font-size: 0.9rem;
+    }
+
+    .card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+
+    .path {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      color: var(--navy);
+    }
+
+    .launch {
+      font-weight: 600;
+      color: var(--blue);
+    }
+
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 1.25rem 0;
+      text-align: center;
+      font-size: 0.8125rem;
+    }
+
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.75rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="container">
+      <a href="/" class="brand" aria-label="Graphwise Platform Hub">Graphwise <span>Portal</span></a>
+    </div>
+  </header>
+
+  <main class="container">
+    <p class="notice" role="note">
+      <strong>Placeholder:</strong> this page is only a placeholder for now and will be replaced by the actual application.
+    </p>
+
+    <section>
+      <p class="eyebrow">Enterprise Semantic Suite</p>
+      <h1>Context &amp; Knowledge Hub</h1>
+      <p class="intro">Direct access to your interconnected knowledge modeling, semantic extraction, search services, and graph database.</p>
+    </section>
+
+    <section class="grid" aria-label="Applications">
+
+      <a href="/PoolParty" class="card">
+        <div>
+          <h2>GraphModeling</h2>
+          <p>Taxonomy and ontology management environment powered by PoolParty.</p>
+        </div>
+        <div class="card-footer">
+          <span class="path">/PoolParty</span>
+          <span class="launch">Launch &rarr;</span>
+        </div>
+      </a>
+
+      <a href="/GraphSearch" class="card">
+        <div>
+          <h2>GraphSearch</h2>
+          <p>Context-aware discovery engine and enterprise knowledge search.</p>
+        </div>
+        <div class="card-footer">
+          <span class="path">/GraphSearch</span>
+          <span class="launch">Launch &rarr;</span>
+        </div>
+      </a>
+
+      <a href="/extractor" class="card">
+        <div>
+          <h2>Semantic Extractor</h2>
+          <p>Natural language pipeline for concept extraction and tagging.</p>
+        </div>
+        <div class="card-footer">
+          <span class="path">/extractor</span>
+          <span class="launch">Launch &rarr;</span>
+        </div>
+      </a>
+
+      <a href="/graphdb" class="card">
+        <div>
+          <h2>GraphDB</h2>
+          <p>Enterprise RDF triple store, SPARQL endpoint, and reasoning engine.</p>
+        </div>
+        <div class="card-footer">
+          <span class="path">/graphdb</span>
+          <span class="launch">Launch &rarr;</span>
+        </div>
+      </a>
+
+      <a href="/ldf" class="card">
+        <div>
+          <h2>Linked Data Frontend</h2>
+          <p>Interactive browsing and dereferencing interface for linked enterprise data.</p>
+        </div>
+        <div class="card-footer">
+          <span class="path">/ldf</span>
+          <span class="launch">Launch &rarr;</span>
+        </div>
+      </a>
+
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2026 Graphwise</p>
+  </footer>
+
+</body>
+</html>
